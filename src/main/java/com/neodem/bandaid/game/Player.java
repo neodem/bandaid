@@ -17,6 +17,13 @@ public interface Player<A extends Action> {
     public A yourTurn(GameContext gc);
 
     /**
+     * something changed, the GameMaster wants to let you know
+     *
+     * @param gc
+     */
+    public void updateContext(GameContext gc);
+
+    /**
      * called by the GameMaster to alert other players to an action
      * by another player.
      *
