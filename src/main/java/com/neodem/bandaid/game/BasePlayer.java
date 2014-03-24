@@ -1,19 +1,21 @@
 package com.neodem.bandaid.game;
 
-import org.springframework.beans.factory.annotation.Required;
-
 /**
- *
  * Author: vfumo
  * Date: 2/28/14
  */
 public abstract class BasePlayer<A extends Action> implements Player<A> {
     protected String playerName;
     protected GameMaster gameMaster;
+    protected GameContext currentGameContext;
 
     @Override
     public String toString() {
         return playerName;
+    }
+
+    public void updateContext(GameContext gc) {
+        currentGameContext = gc;
     }
 
     public void startPlayer() {
@@ -29,12 +31,10 @@ public abstract class BasePlayer<A extends Action> implements Player<A> {
         return playerName;
     }
 
-    @Required
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
 
-    @Required
     public void setGameMaster(GameMaster gameMaster) {
         this.gameMaster = gameMaster;
     }

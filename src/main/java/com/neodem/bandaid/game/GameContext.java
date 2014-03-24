@@ -1,8 +1,5 @@
 package com.neodem.bandaid.game;
 
-import com.neodem.common.collections.CircularList;
-import com.neodem.common.collections.DefaultCircularList;
-
 import java.util.ArrayList;
 import java.util.List;
 
