@@ -46,5 +46,5 @@ public interface Player<A extends Action> {
      *
      * @return the name of the player (should never change)
      */
-    public String getPlayerName();
+    public String getMyName();
 }

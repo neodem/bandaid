@@ -29,7 +29,7 @@ public abstract class BaseGameMaster<P extends Player> implements GameMasterComm
 
     @Override
     public GameContext registerPlayerForNextGame(P player) {
-        String playerName = player.getPlayerName();
+        String playerName = player.getMyName();
 
         if (usedNames.contains(playerName)) throw new IllegalArgumentException("name already used");
         usedNames.add(playerName);

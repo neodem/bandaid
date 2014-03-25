@@ -5,13 +5,13 @@ package com.neodem.bandaid.game;
  * Date: 2/28/14
  */
 public abstract class BasePlayer<A extends Action> implements Player<A> {
-    protected String playerName;
+    protected String myName;
     protected GameMasterCommunicationChannel gameMaster;
     protected GameContext currentGameContext;
 
     @Override
     public String toString() {
-        return playerName;
+        return myName;
     }
 
     public void updateContext(GameContext gc) {
@@ -27,12 +27,12 @@ public abstract class BasePlayer<A extends Action> implements Player<A> {
 
     protected abstract void initializePlayer(GameContext g);
 
-    public String getPlayerName() {
-        return playerName;
+    public String getMyName() {
+        return myName;
     }
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+    public void setMyName(String myName) {
+        this.myName = myName;
     }
 
     public void setGameMaster(GameMasterCommunicationChannel gm) {
