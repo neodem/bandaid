@@ -2,6 +2,8 @@
 .classpath
 .project
 *.iml
+target/*
+.idea/*
 
 # Package Files #
 *.jar

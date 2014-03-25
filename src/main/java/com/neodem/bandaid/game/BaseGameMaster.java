@@ -1,8 +1,5 @@
 package com.neodem.bandaid.game;
 
-import com.neodem.common.collections.CircularList;
-import com.neodem.common.collections.DefaultCircularList;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,14 +9,14 @@ import java.util.List;
  * Author: vfumo
  * Date: 2/28/14
  */
-public abstract class BaseGameMaster<P extends Player> implements GameMaster<P> {
+public abstract class BaseGameMaster<P extends Player> implements GameMasterCommunicationChannel<P>, GameMaster {
 
     protected List<P> registeredPlayers;
     private Collection<String> usedNames;
     private int maxPlayers;
 
     public BaseGameMaster(int playersAllowed) {
-        usedNames = new HashSet<String>();
+        usedNames = new HashSet<>();
         registeredPlayers = new ArrayList<>();
         maxPlayers = playersAllowed;
     }

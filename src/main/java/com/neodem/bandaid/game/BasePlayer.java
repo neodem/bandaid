@@ -6,7 +6,7 @@ package com.neodem.bandaid.game;
  */
 public abstract class BasePlayer<A extends Action> implements Player<A> {
     protected String playerName;
-    protected GameMaster gameMaster;
+    protected GameMasterCommunicationChannel gameMaster;
     protected GameContext currentGameContext;
 
     @Override
@@ -35,7 +35,7 @@ public abstract class BasePlayer<A extends Action> implements Player<A> {
         this.playerName = playerName;
     }
 
-    public void setGameMaster(GameMaster gameMaster) {
-        this.gameMaster = gameMaster;
+    public void setGameMaster(GameMasterCommunicationChannel gm) {
+        this.gameMaster = gm;
     }
 }
