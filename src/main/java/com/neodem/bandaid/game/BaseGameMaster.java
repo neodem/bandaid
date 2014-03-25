@@ -13,8 +13,6 @@ import java.util.List;
  */
 public abstract class BaseGameMaster<P extends Player> implements GameMasterCommunicationChannel<P>, GameMaster {
 
-    protected abstract Log getLog();
-
     protected List<P> registeredPlayers;
     private Collection<String> usedNames;
     private int maxPlayers;
@@ -25,6 +23,8 @@ public abstract class BaseGameMaster<P extends Player> implements GameMasterComm
         maxPlayers = playersAllowed;
     }
 
+    protected abstract Log getLog();
+
     protected abstract void runGameLoop();
 
     protected abstract void initGame();
@@ -34,6 +34,8 @@ public abstract class BaseGameMaster<P extends Player> implements GameMasterComm
     @Override
     public GameContext registerPlayerForNextGame(P player) {
         String playerName = player.getMyName();
+
+        getLog().debug("registerPlayerForNextGame(" + playerName + ")");
 
         if (usedNames.contains(playerName)) throw new IllegalArgumentException("name already used");
         usedNames.add(playerName);
@@ -50,6 +52,7 @@ public abstract class BaseGameMaster<P extends Player> implements GameMasterComm
 
     @Override
     public void startGame() {
+        getLog().info("startGame()");
         initGame();
         runGameLoop();
     }
