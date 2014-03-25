@@ -1,10 +1,14 @@
 package com.neodem.bandaid.game;
 
+import org.apache.commons.logging.Log;
+
 /**
  * Author: vfumo
  * Date: 2/28/14
  */
 public abstract class BasePlayer<A extends Action> implements Player<A> {
+    protected abstract Log getLog();
+
     protected String myName;
     protected GameMasterCommunicationChannel gameMaster;
     protected GameContext currentGameContext;
@@ -19,9 +23,7 @@ public abstract class BasePlayer<A extends Action> implements Player<A> {
     }
 
     public void startPlayer() {
-
         GameContext currentGameContext = gameMaster.registerPlayerForNextGame(this);
-
         initializePlayer(currentGameContext);
     }
 

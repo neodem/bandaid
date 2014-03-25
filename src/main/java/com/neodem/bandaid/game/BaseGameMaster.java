@@ -1,5 +1,7 @@
 package com.neodem.bandaid.game;
 
+import org.apache.commons.logging.Log;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,6 +12,8 @@ import java.util.List;
  * Date: 2/28/14
  */
 public abstract class BaseGameMaster<P extends Player> implements GameMasterCommunicationChannel<P>, GameMaster {
+
+    protected abstract Log getLog();
 
     protected List<P> registeredPlayers;
     private Collection<String> usedNames;

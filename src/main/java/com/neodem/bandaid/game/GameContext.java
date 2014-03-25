@@ -1,5 +1,7 @@
 package com.neodem.bandaid.game;
 
+import org.apache.commons.logging.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,9 @@ import java.util.List;
  * Author: vfumo
  * Date: 2/28/14
  */
-public class GameContext<P extends Player> {
+public abstract class GameContext<P extends Player> {
+
+    protected abstract Log getLog();
 
     // a list of the players in the game (ordered by their position in the game)
     protected List<P> players = new ArrayList<P>();
@@ -31,6 +35,7 @@ public class GameContext<P extends Player> {
 
         for (Player p : players) {
             b.append(p);
+            b.append(' ');
         }
 
         b.append('\n');

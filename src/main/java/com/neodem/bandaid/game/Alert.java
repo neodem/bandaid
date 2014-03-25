@@ -1,5 +1,7 @@
 package com.neodem.bandaid.game;
 
+import org.apache.commons.logging.Log;
+
 /**
  * Created with IntelliJ IDEA.
  * User: vfumo
@@ -7,5 +9,6 @@ package com.neodem.bandaid.game;
  * Time: 12:03 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Alert {
+public abstract class Alert {
+    protected abstract Log getLog();
 }
