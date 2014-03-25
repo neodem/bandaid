@@ -12,14 +12,14 @@ public interface Player<A extends Action> {
      * the client has to do something
      *
      * @param gc the current game context
-     * @return
+     * @return the action the player wants to perform
      */
     public A yourTurn(GameContext gc);
 
     /**
      * something changed, the GameMaster wants to let you know
      *
-     * @param gc
+     * @param gc the current game context
      */
     public void updateContext(GameContext gc);
 
@@ -30,21 +30,21 @@ public interface Player<A extends Action> {
      * @param player    the player who initiated the action
      * @param hisAction the action initiated
      * @param gc        the current game context
-     * @return
      */
-    public A actionHappened(Player player, A hisAction, GameContext gc);
+    public void actionHappened(Player player, A hisAction, GameContext gc);
 
     /**
      * The players action was rejected and they will be called to try again
      *
-     * @param reason
+     * @param reason the reason the player needs to try again
+     *               TODO replace reason with an enum
      */
     public void tryAgain(String reason);
 
     /**
      * get the id of the player
      *
-     * @return
+     * @return the name of the player (should never change)
      */
     public String getPlayerName();
 }
