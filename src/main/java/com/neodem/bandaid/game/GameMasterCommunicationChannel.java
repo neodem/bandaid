@@ -10,5 +10,5 @@ public interface GameMasterCommunicationChannel<P extends Player> {
      * @param player
      * @return
      */
-    GameContext registerPlayerForNextGame(P player);
+    public GameContext registerPlayerForNextGame(P player);
 }
