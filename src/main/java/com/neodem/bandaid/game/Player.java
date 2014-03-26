@@ -47,4 +47,11 @@ public interface Player<A extends Action> {
      * @return the name of the player (should never change)
      */
     public String getMyName();
+
+    /**
+     * will be called just before the game begins. This will allow the player to get set up
+     *
+     * @param g
+     */
+    public void initializePlayer(GameContext g);
 }

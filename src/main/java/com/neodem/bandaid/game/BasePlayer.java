@@ -9,8 +9,11 @@ import org.apache.commons.logging.Log;
 public abstract class BasePlayer<A extends Action> implements Player<A> {
 
     protected String myName;
-    protected GameMasterCommunicationChannel gameMaster;
     protected GameContext currentGameContext;
+
+    public BasePlayer(String name) {
+        myName = name;
+    }
 
     protected abstract Log getLog();
 
@@ -23,24 +26,12 @@ public abstract class BasePlayer<A extends Action> implements Player<A> {
         currentGameContext = gc;
     }
 
-    public void startPlayer() {
-
-        GameContext currentGameContext = gameMaster.registerPlayerForNextGame(this);
-
-        initializePlayer(currentGameContext);
-    }
-
-    protected abstract void initializePlayer(GameContext g);
-
     public String getMyName() {
         return myName;
     }
 
-    public void setMyName(String myName) {
-        this.myName = myName;
-    }
-
-    public void setGameMaster(GameMasterCommunicationChannel gm) {
-        this.gameMaster = gm;
+    @Override
+    public void initializePlayer(GameContext g) {
+        currentGameContext = g;
     }
 }
