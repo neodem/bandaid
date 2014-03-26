@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
  * Date: 2/28/14
  */
 public abstract class BasePlayer<A extends Action> implements Player<A> {
+
     protected String myName;
     protected GameMasterCommunicationChannel gameMaster;
     protected GameContext currentGameContext;
