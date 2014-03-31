@@ -13,23 +13,9 @@
     <name>Bandaid</name>
     <description>a framework for making simple networked games</description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <scm>
-        <connection>scm:git:git://dev.neodem.com:/opt/git/bandaid.git</connection>
-        <developerConnection>scm:git:git://dev.neodem.com:/opt/git/bandaid.git</developerConnection>
+        <connection>scm:git:ssh://git@dev.neodem.com/opt/git/bandaid.git</connection>
+        <developerConnection>scm:git:ssh://git@dev.neodem.com/opt/git/bandaid.git</developerConnection>
     </scm>
 
     <properties>
@@ -58,8 +44,21 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
+    <dependencies>
 
         <dependency>
             <groupId>org.springframework</groupId>
