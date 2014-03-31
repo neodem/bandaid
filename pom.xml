@@ -59,11 +59,6 @@
     </distributionManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>com.neodem</groupId>
-            <artifactId>neodem-common</artifactId>
-            <version>1.1.2-SNAPSHOT</version>
-        </dependency>
 
 
         <dependency>
