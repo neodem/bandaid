@@ -27,6 +27,11 @@
         </plugins>
     </build>
 
+    <scm>
+        <connection>scm:git:git@dev.neodem.com:/opt/git/bandaid.git</connection>
+        <developerConnection>scm:git:git@dev.neodem.com:/opt/git/bandaid.git</developerConnection>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
