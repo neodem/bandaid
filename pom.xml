@@ -28,8 +28,8 @@
     </build>
 
     <scm>
-        <connection>scm:git:http://dev.neodem.com/opt/git/bandaid.git</connection>
-        <developerConnection>scm:git:http://dev.neodem.com/opt/git/bandaid.git</developerConnection>
+        <connection>scm:git:git://dev.neodem.com:/opt/git/bandaid.git</connection>
+        <developerConnection>scm:git:git://dev.neodem.com:/opt/git/bandaid.git</developerConnection>
     </scm>
 
     <properties>
