@@ -1,6 +1,7 @@
 package com.neodem.bandaid.server;
 
 import com.neodem.bandaid.gamemaster.GameMaster;
+import com.neodem.bandaid.gamemaster.PlayerCallback;
 import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageType;
@@ -113,7 +114,7 @@ public final class BandaidGameServer implements ComInterface {
 
     private void startGame() {
         log.info("initializing Game");
-        gameMaster.initGame(new ArrayList(registeredPlayers.values()));
+        gameMaster.initGame(new ArrayList<PlayerCallback>(registeredPlayers.values()));
 
         log.info("Starting Game");
         gameMaster.startGame();
