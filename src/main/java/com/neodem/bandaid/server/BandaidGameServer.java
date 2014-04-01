@@ -1,12 +1,14 @@
 package com.neodem.bandaid.server;
 
 import com.neodem.bandaid.gameMaster.GameMaster;
-import com.neodem.bandaid.messaging.MessageTranslator;
-import com.neodem.bandaid.messaging.MessageType;
+import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
+import com.neodem.bandaid.messaging.ServerMessageTranslator;
+import com.neodem.bandaid.messaging.ServerMessageType;
 import com.neodem.bandaid.network.ComBaseClient;
 import com.neodem.bandaid.network.ComInterface;
 import com.neodem.bandaid.network.ComServer;
 import com.neodem.bandaid.proxy.PlayerProxy;
+import com.neodem.bandaid.proxy.PlayerProxyFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,8 +28,8 @@ public final class BandaidGameServer implements ComInterface {
     // networked players registerd with this server. In the future They may or may not not be in a game
     private final Map<Integer, PlayerProxy> registeredPlayers = new HashMap<>();
     private GameMaster gameMaster;
-    private MessageTranslator messageTranslator;
-    private Thread gameThread;
+    private ServerMessageTranslator smt = new JsonServerMessageTranslator();
+    private PlayerProxyFactory playerProxyFactory;
     private ComServer comServer;
 
     public class MessageHandler extends ComBaseClient implements Runnable {
@@ -47,21 +49,13 @@ public final class BandaidGameServer implements ComInterface {
         @Override
         protected void handleMessage(int from, String msg) {
             log.trace("Server : handle message : " + msg);
-            MessageType type = messageTranslator.unmarshalMessageTypeFromMessage(msg);
-            if (type == MessageType.register) {
-                String playerName = messageTranslator.unmarshalPlayerNameFromMessage(msg);
-                PlayerProxy proxy = new PlayerProxy(playerName, from, messageTranslator, server);
+            ServerMessageType type = smt.unmarshalServerMessageTypeFromMessage(msg);
+            if (type == ServerMessageType.register) {
+                String playerName = smt.unmarshalPlayerNameFromMessage(msg);
+                PlayerProxy proxy = playerProxyFactory.makeNewProxy(playerName, from, server);
                 registeredPlayers.put(from, proxy);
-
-                //checkForGameStart();
-                // note this code is temp. It starts the game when there are 4 players registerd.
-                // in the future I'd like to enable players to register with the server and then
-                // wait until a game is available for them. eg. the server will wait for 4 people,
-                // put them into a game and fire it off and then wait for 4 more, etc.
-                if (registeredPlayers.size() == 4) {
-                    startGame();
-                }
-            } else if (type == MessageType.reply) {
+                checkForGameStart();
+            } else if (type == ServerMessageType.reply) {
                 synchronized (this) {
                     mostRecentMessage = msg;
                     notify();
@@ -77,10 +71,12 @@ public final class BandaidGameServer implements ComInterface {
     // TODO
     private void checkForGameStart() {
 
+        // note this code is temp. It starts the game when there are 4 players registerd.
+        // in the future I'd like to enable players to register with the server and then
+        // wait until a game is available for them. eg. the server will wait for 4 people,
+        // put them into a game and fire it off and then wait for 4 more, etc.
         if (registeredPlayers.size() == 4) {
-            // move them into their own game
-            // the game will have it's own gamemaster (also on the chat channel)
-            //
+            startGame();
         }
     }
 
@@ -127,11 +123,11 @@ public final class BandaidGameServer implements ComInterface {
         this.gameMaster = cgm;
     }
 
-    public void setMessageTranslator(MessageTranslator messageTranslator) {
-        this.messageTranslator = messageTranslator;
-    }
-
     public void setComServer(ComServer comServer) {
         this.comServer = comServer;
+    }
+
+    public void setPlayerProxyFactory(PlayerProxyFactory playerProxyFactory) {
+        this.playerProxyFactory = playerProxyFactory;
     }
 }

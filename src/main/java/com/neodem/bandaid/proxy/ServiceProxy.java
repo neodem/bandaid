@@ -1,8 +1,9 @@
 package com.neodem.bandaid.proxy;
 
 import com.neodem.bandaid.gameMaster.PlayerCallback;
-import com.neodem.bandaid.messaging.MessageTranslator;
-import com.neodem.bandaid.messaging.MessageType;
+import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
+import com.neodem.bandaid.messaging.ServerMessageTranslator;
+import com.neodem.bandaid.messaging.ServerMessageType;
 import com.neodem.bandaid.network.ComBaseClient;
 import com.neodem.bandaid.network.ComServer;
 import org.apache.logging.log4j.LogManager;
@@ -15,20 +16,20 @@ import org.apache.logging.log4j.Logger;
 public abstract class ServiceProxy extends ComBaseClient {
 
     private static final Logger log = LogManager.getLogger(ServiceProxy.class.getName());
-    private final MessageTranslator messageTranslator;
+    private final ServerMessageTranslator messageTranslator;
     private final PlayerCallback player;
 
-    public ServiceProxy(PlayerCallback target, MessageTranslator messageTranslator, String host, int port) {
+    public ServiceProxy(PlayerCallback target, String host, int port) {
         super(host, port);
         this.player = target;
-        this.messageTranslator = messageTranslator;
+        this.messageTranslator = new JsonServerMessageTranslator();
     }
 
     @Override
     public void init() {
         super.init();
         String m = messageTranslator.marshalRegistrationMesage(player.getPlayerName());
-        log.debug("{} : registering with the server : {}", player.getPlayerName(), MessageType.reply);
+        log.debug("{} : registering with the server : {}", player.getPlayerName(), m);
         send(ComServer.Server, m);
     }
 
@@ -36,18 +37,22 @@ public abstract class ServiceProxy extends ComBaseClient {
     public void handleMessage(int from, String m) {
         log.trace("{} : message received from {} : {}", player.getPlayerName(), from, m);
 
-        MessageType type = messageTranslator.unmarshalMessageTypeFromMessage(m);
+        ServerMessageType type = messageTranslator.unmarshalServerMessageTypeFromMessage(m);
 
-        if (type.requiresReply()) {
-            String reply = handleMessageWithReply(type, m);
-            log.trace("{} : replying to server : {}", player.getPlayerName(), reply);
-            send(ComServer.Server, reply);
-        } else {
-            handleAsynchonousMessage(type, m);
+        if (type == ServerMessageType.gameMessage || type == ServerMessageType.gameMessageNeedsReply) {
+            String message = messageTranslator.getGameMessage(m);
+
+            if (type == ServerMessageType.gameMessageNeedsReply) {
+                String reply = handleMessageWithReply(m);
+                log.trace("{} : replying to server : {}", player.getPlayerName(), reply);
+                send(ComServer.Server, reply);
+            } else {
+                handleAsynchonousMessage(m);
+            }
         }
     }
 
-    public abstract String handleMessageWithReply(MessageType type, String m);
+    public abstract String handleMessageWithReply(String m);
 
-    public abstract void handleAsynchonousMessage(MessageType type, String m);
+    public abstract void handleAsynchonousMessage(String m);
 }
