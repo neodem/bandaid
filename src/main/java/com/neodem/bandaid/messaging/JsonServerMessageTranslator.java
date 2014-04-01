@@ -11,6 +11,7 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
 
     private static final String TYPE = "ServerMessageType";
     private static final String PLAYER = "PlayerName";
+    private static final String GAMEMESSAGE = "GameMessage";
 
     @Override
     public ServerMessageType unmarshalServerMessageTypeFromMessage(String m) {
@@ -53,6 +54,23 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
         setMessageTypeIntoJSONObject(ServerMessageType.register, j);
         setPlayerNameIntoJSONObject(playerName, j);
         return j.toString();
+    }
+
+    @Override
+    public String getGameMessage(String m) {
+        JSONObject j;
+        String result = null;
+
+        if (m != null) {
+            try {
+                j = new JSONObject(m);
+                result = j.getString(GAMEMESSAGE);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
     }
 
     protected void setPlayerNameIntoJSONObject(String playerName, JSONObject j) {
