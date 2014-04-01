@@ -1,6 +1,6 @@
 package com.neodem.bandaid.server;
 
-import com.neodem.bandaid.gameMaster.GameMaster;
+import com.neodem.bandaid.gamemaster.GameMaster;
 import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageType;

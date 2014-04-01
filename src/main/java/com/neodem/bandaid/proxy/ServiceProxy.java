@@ -1,6 +1,6 @@
 package com.neodem.bandaid.proxy;
 
-import com.neodem.bandaid.gameMaster.PlayerCallback;
+import com.neodem.bandaid.gamemaster.PlayerCallback;
 import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageType;
