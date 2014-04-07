@@ -16,7 +16,7 @@ public abstract class BaseGameMaster implements GameMaster, Runnable {
 
     /**
      * this is the main game loop. It gets run on a thread and once it's over
-     * the tread/game dies
+     * the thread/game dies
      */
     protected abstract void runGame();
 
@@ -35,6 +35,4 @@ public abstract class BaseGameMaster implements GameMaster, Runnable {
     public final void run() {
         runGame();
     }
-
-
 }

@@ -7,5 +7,5 @@ import com.neodem.bandaid.server.BandaidGameServer;
  * Created Date: 4/1/14
  */
 public interface PlayerProxyFactory {
-    PlayerProxy makeNewProxy(String playerName, int from, BandaidGameServer server);
+    PlayerProxy makeNewProxy(String playerName, int myNetworkId, BandaidGameServer server);
 }

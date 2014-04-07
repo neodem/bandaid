@@ -1,6 +1,8 @@
 package com.neodem.bandaid.proxy;
 
 import com.neodem.bandaid.gamemaster.PlayerCallback;
+import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
+import com.neodem.bandaid.messaging.ServerMessageTranslator;
 import com.neodem.bandaid.network.ComInterface;
 
 /**
@@ -12,13 +14,15 @@ import com.neodem.bandaid.network.ComInterface;
  */
 public class PlayerProxy implements PlayerCallback {
     protected final String playerName;
-    protected final ComInterface server;
     protected final int networkId;
+    private final ComInterface comInterface;
+    private final ServerMessageTranslator serverMessageTranslator;
 
     public PlayerProxy(String playerName, int networkId, ComInterface server) {
         this.playerName = playerName;
         this.networkId = networkId;
-        this.server = server;
+        this.comInterface = server;
+        this.serverMessageTranslator = new JsonServerMessageTranslator();
     }
 
     @Override
@@ -47,4 +51,16 @@ public class PlayerProxy implements PlayerCallback {
     public String toString() {
         return playerName;
     }
+
+    protected void sendGameMessage(int dest, String gameMessage) {
+        String m = serverMessageTranslator.marshalGameMessage(gameMessage);
+        comInterface.sendMessage(dest, m);
+    }
+
+    protected String sendGameMessageExpectReply(int dest, String gameMessage) {
+        String m = serverMessageTranslator.marshalGameMessageExpectsReply(gameMessage);
+        String reply = comInterface.sendAndGetReply(dest, m);
+        return serverMessageTranslator.getGameMessage(reply);
+    }
+
 }

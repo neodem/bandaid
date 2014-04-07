@@ -34,20 +34,20 @@ public abstract class ServiceProxy extends ComBaseClient {
     }
 
     @Override
-    public void handleMessage(int from, String m) {
-        log.trace("{} : message received from {} : {}", player.getPlayerName(), from, m);
+    public void handleMessage(int from, String serverMessage) {
+        log.trace("{} : message received from {} : {}", player.getPlayerName(), from, serverMessage);
 
-        ServerMessageType type = messageTranslator.unmarshalServerMessageTypeFromMessage(m);
+        ServerMessageType type = messageTranslator.unmarshalServerMessageTypeFromMessage(serverMessage);
 
         if (type == ServerMessageType.gameMessage || type == ServerMessageType.gameMessageNeedsReply) {
-            String message = messageTranslator.getGameMessage(m);
+            String gameMessage = messageTranslator.getGameMessage(serverMessage);
 
             if (type == ServerMessageType.gameMessageNeedsReply) {
-                String reply = handleMessageWithReply(m);
+                String reply = handleMessageWithReply(gameMessage);
                 log.trace("{} : replying to server : {}", player.getPlayerName(), reply);
                 send(ComServer.Server, reply);
             } else {
-                handleAsynchonousMessage(m);
+                handleAsynchonousMessage(gameMessage);
             }
         }
     }

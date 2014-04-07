@@ -12,4 +12,8 @@ public interface ServerMessageTranslator {
     public String marshalRegistrationMesage(String playerName);
 
     String getGameMessage(String m);
+
+    String marshalGameMessage(String gameMessage);
+
+    String marshalGameMessageExpectsReply(String gameMessage);
 }

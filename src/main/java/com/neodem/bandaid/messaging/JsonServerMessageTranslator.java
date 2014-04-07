@@ -73,6 +73,32 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
         return result;
     }
 
+    @Override
+    public String marshalGameMessage(String gameMessage) {
+        JSONObject j = new JSONObject();
+        setMessageTypeIntoJSONObject(ServerMessageType.gameMessage, j);
+        setGameMessageIntoJSONObject(gameMessage, j);
+        return j.toString();
+    }
+
+    @Override
+    public String marshalGameMessageExpectsReply(String gameMessage) {
+        JSONObject j = new JSONObject();
+        setMessageTypeIntoJSONObject(ServerMessageType.gameMessageNeedsReply, j);
+        setGameMessageIntoJSONObject(gameMessage, j);
+        return j.toString();
+    }
+
+    protected void setGameMessageIntoJSONObject(String gameMessage, JSONObject j) {
+        if (gameMessage != null && j != null) {
+            try {
+                j.put(GAMEMESSAGE, gameMessage);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     protected void setPlayerNameIntoJSONObject(String playerName, JSONObject j) {
         if (playerName != null && j != null) {
             try {
