@@ -12,32 +12,19 @@ import java.util.Map;
 
 /**
  * top level server!
- *
+ * <p/>
  * This handles all the server messages and passes them to and from the BandaidGameServer for processing
- *
+ * <p/>
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 4/9/14
  */
-public class BandaidServer {
+public final class BandaidServer {
 
     private static final Logger log = LogManager.getLogger(BandaidServer.class.getName());
-
     private MessageProcesser messageHandler;
     private ServerMessageTranslator serverMessageTranslator;
     private ComServer comServer;
     private BandaidGameServer bandaidGameServer;
-
-    public void start() {
-
-        // start main communications system
-        comServer.startComServer();
-
-        // set up our message processor
-        messageHandler = new MessageProcesser("localhost", 6969);
-        Thread mt = new Thread(messageHandler);
-        mt.setName("BandaidServer-MessageProcessor");
-        mt.start();
-    }
 
     public class MessageProcesser extends ComBaseClient implements Runnable {
 
@@ -63,7 +50,7 @@ public class BandaidServer {
                     }
                     break;
                 case getAvailableGames:
-                    Map<String,String> availableGames = bandaidGameServer.getAvailableGames();
+                    Map<String, String> availableGames = bandaidGameServer.getAvailableGames();
                     replyMessage = serverMessageTranslator.marshalAvailableGames(availableGames);
                     break;
                 case registerForGame:
@@ -83,9 +70,10 @@ public class BandaidServer {
                     String serverStatus = bandaidGameServer.getServerStatus();
                     replyMessage = serverMessageTranslator.marshalServerStatus(serverStatus);
                     break;
-            };
+            }
+            ;
 
-            if(replyMessage != null) {
+            if (replyMessage != null) {
                 send(from, replyMessage);
             }
         }
@@ -93,6 +81,18 @@ public class BandaidServer {
         public void run() {
             init();
         }
+    }
+
+    public void start() {
+
+        // start main communications system
+        comServer.startComServer();
+
+        // set up our message processor
+        messageHandler = new MessageProcesser("localhost", 6969);
+        Thread mt = new Thread(messageHandler);
+        mt.setName("BandaidServer-MessageProcessor");
+        mt.start();
     }
 
     public void setServerMessageTranslator(ServerMessageTranslator serverMessageTranslator) {

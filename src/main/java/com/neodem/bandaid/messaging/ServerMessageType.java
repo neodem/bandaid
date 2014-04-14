@@ -17,15 +17,11 @@ public enum ServerMessageType {
 
     serverStatus,
 
+    reply,
 
-//    reply,
-//
-//
-//
-//
-//    gameMessage,
-//
-//    gameMessageNeedsReply,
+    gameMessage,
+
+    gameMessageNeedsReply,
 
     unknown,;
 }
