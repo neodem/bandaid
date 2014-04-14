@@ -3,6 +3,7 @@ package com.neodem.bandaid.server;
 import com.google.common.collect.Maps;
 import com.neodem.bandaid.gamemaster.GameMaster;
 import com.neodem.bandaid.gamemaster.PlayerError;
+import com.neodem.bandaid.network.ComInterface;
 import com.neodem.bandaid.proxy.PlayerProxy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +51,7 @@ public final class BandaidGameServerImpl implements BandaidGameServer {
     }
 
     @Override
-    public boolean registerForGame(int networkId, String gameId) throws PlayerError {
+    public boolean registerForGame(int networkId, String gameId, ComInterface comInterface) throws PlayerError {
 
         if (playersInGames.containsKey(networkId)) {
             String msg = "player already in game : " + playersInGames.get(networkId);
@@ -61,7 +62,7 @@ public final class BandaidGameServerImpl implements BandaidGameServer {
             String playerName = connectedPlayers.get(networkId);
             if (gameMasters.containsKey(gameId)) {
                 GameMaster gm = gameMasters.get(gameId);
-                PlayerProxy proxy = gm.makeNewProxy(playerName, networkId, this);
+                PlayerProxy proxy = gm.makeNewProxy(playerName, networkId, comInterface);
                 boolean result = gm.registerPlayer(networkId, proxy);
 
                 if (gm.gameReady()) {

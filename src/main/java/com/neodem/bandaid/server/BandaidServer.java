@@ -4,6 +4,7 @@ import com.neodem.bandaid.gamemaster.PlayerError;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageType;
 import com.neodem.bandaid.network.ComBaseClient;
+import com.neodem.bandaid.network.ComInterface;
 import com.neodem.bandaid.network.ComServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +19,7 @@ import java.util.Map;
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 4/9/14
  */
-public final class BandaidServer {
+public final class BandaidServer implements ComInterface {
 
     private static final Logger log = LogManager.getLogger(BandaidServer.class.getName());
     private MessageProcesser messageHandler;
@@ -28,8 +29,16 @@ public final class BandaidServer {
 
     public class MessageProcesser extends ComBaseClient implements Runnable {
 
-        public MessageProcesser(String host, int port) {
+        private ComInterface comInterface;
+        private String mostRecentMessage = null;
+
+        public MessageProcesser(String host, int port, ComInterface comInterface) {
             super(host, port);
+            this.comInterface = comInterface;
+        }
+
+        public String getMostRecentMessage() {
+            return mostRecentMessage;
         }
 
         @Override
@@ -45,7 +54,7 @@ public final class BandaidServer {
                     String name = serverMessageTranslator.unmarshalServerConnectName(msg);
                     try {
                         bandaidGameServer.connect(from, name);
-                    } catch (PlayerError playerError) {
+                    } catch (com.neodem.bandaid.gamemaster.PlayerError playerError) {
                         replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
                     }
                     break;
@@ -56,7 +65,7 @@ public final class BandaidServer {
                 case registerForGame:
                     boolean result;
                     try {
-                        result = bandaidGameServer.registerForGame(from, gameId);
+                        result = bandaidGameServer.registerForGame(from, gameId, comInterface);
                         replyMessage = serverMessageTranslator.marshalServerReplyBoolean(result);
                     } catch (PlayerError playerError) {
                         replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
@@ -69,6 +78,12 @@ public final class BandaidServer {
                 case serverStatus:
                     String serverStatus = bandaidGameServer.getServerStatus();
                     replyMessage = serverMessageTranslator.marshalServerStatus(serverStatus);
+                    break;
+                case reply:
+                    synchronized (this) {
+                        mostRecentMessage = msg;
+                        notify();
+                    }
                     break;
             }
             ;
@@ -83,13 +98,33 @@ public final class BandaidServer {
         }
     }
 
+    @Override
+    public void sendMessage(int dest, String msg) {
+        messageHandler.send(dest, msg);
+    }
+
+    @Override
+    public String sendAndGetReply(int dest, String msg) {
+        messageHandler.send(dest, msg);
+
+        synchronized (messageHandler) {
+            try {
+                messageHandler.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return messageHandler.getMostRecentMessage();
+    }
+
     public void start() {
 
         // start main communications system
         comServer.startComServer();
 
         // set up our message processor
-        messageHandler = new MessageProcesser("localhost", 6969);
+        messageHandler = new MessageProcesser("localhost", 6969, this);
         Thread mt = new Thread(messageHandler);
         mt.setName("BandaidServer-MessageProcessor");
         mt.start();
