@@ -47,6 +47,8 @@ public abstract class BaseGameMaster implements GameMaster, Runnable {
         }
     }
 
+
+
     protected abstract Logger getLog();
 
     /**

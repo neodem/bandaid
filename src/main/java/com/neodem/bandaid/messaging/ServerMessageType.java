@@ -7,7 +7,15 @@ package com.neodem.bandaid.messaging;
 public enum ServerMessageType {
     //==== server related message types
 
-    serverConnect, getAvailableGames, registerForGame, serverGameStatus, serverStatus,
+    serverConnect,
+
+    getAvailableGames,
+
+    registerForGame,
+
+    serverGameStatus,
+
+    serverStatus,
 
 
 //    reply,

@@ -1,5 +1,6 @@
 package com.neodem.bandaid.messaging;
 
+import com.neodem.bandaid.gamemaster.PlayerError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -124,6 +125,46 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     @Override
     public String unmarshalServerReplyGameStatus(String reply) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String unmarshalGameId(String msg) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String unmarshalServerConnectName(String msg) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String marshalPlayerError(PlayerError playerError) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String marshalAvailableGames(Map<String, String> availableGames) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String marshalServerReplyBoolean(boolean result) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String marshalGameStatus(String gameStatus) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String marshalServerStatus(String serverStatus) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void checkReplyForPlayerError(String reply) throws PlayerError {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     protected void setGameMessageIntoJSONObject(String gameMessage, JSONObject j) {

@@ -1,5 +1,7 @@
 package com.neodem.bandaid.messaging;
 
+import com.neodem.bandaid.gamemaster.PlayerError;
+
 import java.util.Map;
 
 /**
@@ -33,6 +35,22 @@ public interface ServerMessageTranslator {
 
     String unmarshalServerReplyGameStatus(String reply);
 
+    String unmarshalGameId(String msg);
+
+    String unmarshalServerConnectName(String msg);
+
+    String marshalPlayerError(PlayerError playerError);
+
+    String marshalAvailableGames(Map<String,String> availableGames);
+
+    String marshalServerReplyBoolean(boolean result);
+
+    String marshalGameStatus(String gameStatus);
+
+    String marshalServerStatus(String serverStatus);
+
+    void checkReplyForPlayerError(String reply) throws PlayerError;
+
 
     /// game messages
 
@@ -40,5 +58,8 @@ public interface ServerMessageTranslator {
 
     String marshalGameMessage(String gameMessage);
 
-    void checkReplyForPlayerError(String reply) throws PlayerError;
+
+
+
+
 }
