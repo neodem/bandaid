@@ -21,11 +21,15 @@ public interface ServerMessageTranslator {
 
     String marshalServerGetAvailableGames();
 
-    Map<String, String> unmarshalServerReplyAvailableGames(String reply);
 
-    String marshalServerRegisterForGame(int networkId, String gameId);
+    String marshalAvailableGames(Map<String,String> availableGames);
+    Map<String, String> unmarshalAvailableGames(String reply);
 
+    String marshalRegisterForGameRequest(int networkId, String gameId);
+
+    String marshalRegisterForGameReply(boolean result);
     boolean unmarshalServerReplyRegisterForGame(String reply);
+
 
     String marshalServerServerStatus();
 
@@ -41,7 +45,7 @@ public interface ServerMessageTranslator {
 
     String marshalPlayerError(PlayerError playerError);
 
-    String marshalAvailableGames(Map<String,String> availableGames);
+
 
     String marshalServerReplyBoolean(boolean result);
 
@@ -51,15 +55,11 @@ public interface ServerMessageTranslator {
 
     void checkReplyForPlayerError(String reply) throws PlayerError;
 
-
     /// game messages
-
-    String unmarshalGameMessage(String m);
 
     String marshalGameMessage(String gameMessage);
 
-
-
+    String unmarshalGameMessage(String m);
 
 
 }

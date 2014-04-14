@@ -66,7 +66,7 @@ public final class BandaidServer implements ComInterface {
                     boolean result;
                     try {
                         result = bandaidGameServer.registerForGame(from, gameId, comInterface);
-                        replyMessage = serverMessageTranslator.marshalServerReplyBoolean(result);
+                        replyMessage = serverMessageTranslator.marshalRegisterForGameReply(result);
                     } catch (PlayerError playerError) {
                         replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
                     }

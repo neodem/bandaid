@@ -85,12 +85,12 @@ public abstract class ServiceProxy extends ComBaseClient implements BandaidGameS
     public Map<String, String> getAvailableGames() {
         String m = serverMessageTranslator.marshalServerGetAvailableGames();
         String reply = sendAndExpectReply(ComServer.Server, m);
-        return serverMessageTranslator.unmarshalServerReplyAvailableGames(reply);
+        return serverMessageTranslator.unmarshalAvailableGames(reply);
     }
 
     @Override
     public boolean registerForGame(int networkId, String gameId) throws PlayerError {
-        String m = serverMessageTranslator.marshalServerRegisterForGame(networkId, gameId);
+        String m = serverMessageTranslator.marshalRegisterForGameRequest(networkId, gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
         return serverMessageTranslator.unmarshalServerReplyRegisterForGame(reply);
     }

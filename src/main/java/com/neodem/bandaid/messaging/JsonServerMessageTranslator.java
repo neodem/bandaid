@@ -14,6 +14,9 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
 
     private static final String TYPE = "ServerMessageType";
     private static final String GAMEMESSAGE = "GameMessage";
+    private static final String GAMEID = "GameId";
+
+    private static final String PLAYERERROR = "PlayerError";
 
     @Override
     public ServerMessageType unmarshalServerMessageTypeFromMessage(String m) {
@@ -84,12 +87,17 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String marshalServerRegisterForGame(int networkId, String gameId) {
+    public String marshalRegisterForGameRequest(int networkId, String gameId) {
         JSONObject j = new JSONObject();
         setMessageTypeIntoJSONObject(ServerMessageType.registerForGame, j);
         JsonUtil.setStringIntoJSONObject(gameId, j);
         JsonUtil.setIntegerIntoJSONObject(networkId, j);
         return j.toString();
+    }
+
+    @Override
+    public String marshalRegisterForGameReply(boolean result) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -108,7 +116,12 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public Map<String, String> unmarshalServerReplyAvailableGames(String reply) {
+    public String marshalAvailableGames(Map<String, String> availableGames) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Map<String, String> unmarshalAvailableGames(String reply) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -139,13 +152,13 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
 
     @Override
     public String marshalPlayerError(PlayerError playerError) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        JSONObject j = new JSONObject();
+        setMessageTypeIntoJSONObject(ServerMessageType.reply, j);
+        setKeyValueStringsIntoJSONObject(PLAYERERROR, playerError.getMessage(), j);
+        return j.toString();
     }
 
-    @Override
-    public String marshalAvailableGames(Map<String, String> availableGames) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+
 
     @Override
     public String marshalServerReplyBoolean(boolean result) {
@@ -164,13 +177,34 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
 
     @Override
     public void checkReplyForPlayerError(String reply) throws PlayerError {
-        //To change body of implemented methods use File | Settings | File Templates.
+        JSONObject j;
+
+        if (reply != null) {
+            try {
+                j = new JSONObject(reply);
+                String playerErrorMessage = j.getString(PLAYERERROR);
+                if(playerErrorMessage != null) {
+                    throw new PlayerError(playerErrorMessage);
+                }
+            } catch (JSONException e) {
+            }
+        }
     }
 
     protected void setGameMessageIntoJSONObject(String gameMessage, JSONObject j) {
         if (gameMessage != null && j != null) {
             try {
                 j.put(GAMEMESSAGE, gameMessage);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void setKeyValueStringsIntoJSONObject(String key, String value, JSONObject j) {
+        if (key != null && j != null) {
+            try {
+                j.put(key, value);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
