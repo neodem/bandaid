@@ -104,10 +104,6 @@ public abstract class ComBaseClient {
         }
     }
 
-    public void broadcast(String message) {
-        send(ComServer.Broadcast, message);
-    }
-
     private final void handle(String netMessage) {
         int id = mt.getFrom(netMessage);
         String message = mt.getPayload(netMessage);

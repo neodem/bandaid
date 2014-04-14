@@ -1,8 +1,9 @@
 package com.neodem.bandaid.gamemaster;
 
+import com.neodem.bandaid.messaging.ServerMessageType;
+import com.neodem.bandaid.network.ComBaseClient;
+import com.neodem.bandaid.proxy.PlayerProxy;
 import org.apache.logging.log4j.Logger;
-
-import java.util.List;
 
 /**
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
@@ -11,6 +12,40 @@ import java.util.List;
 public abstract class BaseGameMaster implements GameMaster, Runnable {
 
     private Thread gameThread;
+
+    public class MessageHandler extends ComBaseClient implements Runnable {
+
+        private String mostRecentMessage = null;
+
+        public MessageHandler(String host, int port) {
+            super(host, port);
+        }
+
+        public String getMostRecentMessage() {
+            return mostRecentMessage;
+        }
+
+        @Override
+        protected void handleMessage(int from, String msg) {
+            getLog().trace("GameMaster : handle message : " + msg);
+            ServerMessageType type = smt.unmarshalServerMessageTypeFromMessage(msg);
+            if (type == ServerMessageType.register) {
+                String playerName = smt.unmarshalPlayerNameFromMessage(msg);
+                PlayerProxy proxy = playerProxyFactory.makeNewProxy(playerName, from, server);
+                registeredPlayers.put(from, proxy);
+                checkForGameStart();
+            } else if (type == ServerMessageType.reply) {
+                synchronized (this) {
+                    mostRecentMessage = msg;
+                    notify();
+                }
+            }
+        }
+
+        public void run() {
+            init();
+        }
+    }
 
     protected abstract Logger getLog();
 
@@ -24,7 +59,7 @@ public abstract class BaseGameMaster implements GameMaster, Runnable {
         return "GameMaster";
     }
 
-    public abstract void initGame(List<PlayerCallback> registeredPlayers);
+    public abstract void initGame();
 
     public final void startGame() {
         gameThread = new Thread(this);

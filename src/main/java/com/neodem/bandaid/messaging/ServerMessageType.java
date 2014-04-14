@@ -7,20 +7,17 @@ package com.neodem.bandaid.messaging;
 public enum ServerMessageType {
     //==== server related message types
 
-    reply,
+    serverConnect, getAvailableGames, registerForGame, serverGameStatus, serverStatus,
 
-    // called from client : used to see the current status of the server
-    status,
 
-    // called from client : used to resiger your name with the server
-    register,
+//    reply,
+//
+//
+//
+//
+//    gameMessage,
+//
+//    gameMessageNeedsReply,
 
-    // called from server : used to tell a client the current status
-    serverStatus,
-
-    gameMessage,
-
-    gameMessageNeedsReply,
-
-    unknown;
+    unknown,;
 }

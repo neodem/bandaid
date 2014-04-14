@@ -60,7 +60,7 @@ public class PlayerProxy implements PlayerCallback {
     protected String sendGameMessageExpectReply(int dest, String gameMessage) {
         String m = serverMessageTranslator.marshalGameMessageExpectsReply(gameMessage);
         String reply = comInterface.sendAndGetReply(dest, m);
-        return serverMessageTranslator.getGameMessage(reply);
+        return serverMessageTranslator.unmarshalGameMessage(reply);
     }
 
 }
