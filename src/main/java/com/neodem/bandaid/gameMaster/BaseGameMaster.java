@@ -27,19 +27,19 @@ public abstract class BaseGameMaster implements GameMaster, Runnable {
 
         @Override
         protected void handleMessage(int from, String msg) {
-            getLog().trace("GameMaster : handle message : " + msg);
-            ServerMessageType type = smt.unmarshalServerMessageTypeFromMessage(msg);
-            if (type == ServerMessageType.register) {
-                String playerName = smt.unmarshalPlayerNameFromMessage(msg);
-                PlayerProxy proxy = playerProxyFactory.makeNewProxy(playerName, from, server);
-                registeredPlayers.put(from, proxy);
-                checkForGameStart();
-            } else if (type == ServerMessageType.reply) {
-                synchronized (this) {
-                    mostRecentMessage = msg;
-                    notify();
-                }
-            }
+//            getLog().trace("GameMaster : handle message : " + msg);
+//            ServerMessageType type = smt.unmarshalServerMessageTypeFromMessage(msg);
+//            if (type == ServerMessageType.register) {
+//                String playerName = smt.unmarshalPlayerNameFromMessage(msg);
+//                PlayerProxy proxy = playerProxyFactory.makeNewProxy(playerName, from, server);
+//                registeredPlayers.put(from, proxy);
+//                checkForGameStart();
+//            } else if (type == ServerMessageType.reply) {
+//                synchronized (this) {
+//                    mostRecentMessage = msg;
+//                    notify();
+//                }
+//            }
         }
 
         public void run() {

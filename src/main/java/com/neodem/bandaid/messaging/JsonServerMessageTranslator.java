@@ -101,7 +101,7 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String marshalServerServerStatus() {
+    public String marshalServerRequestGetServerStatus() {
         JSONObject j = new JSONObject();
         setMessageTypeIntoJSONObject(ServerMessageType.serverStatus, j);
         return j.toString();

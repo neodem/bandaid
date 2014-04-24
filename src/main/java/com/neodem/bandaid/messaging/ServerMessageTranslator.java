@@ -31,7 +31,7 @@ public interface ServerMessageTranslator {
     boolean unmarshalServerReplyRegisterForGame(String reply);
 
 
-    String marshalServerServerStatus();
+    String marshalServerRequestGetServerStatus();
 
     String unmarshalServerReplyServerStatus(String reply);
 

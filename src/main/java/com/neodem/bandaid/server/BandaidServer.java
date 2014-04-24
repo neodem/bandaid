@@ -1,14 +1,15 @@
 package com.neodem.bandaid.server;
 
+import com.google.common.collect.Maps;
+import com.neodem.bandaid.gamemaster.GameMaster;
 import com.neodem.bandaid.gamemaster.PlayerError;
-import com.neodem.bandaid.messaging.ServerMessageTranslator;
-import com.neodem.bandaid.messaging.ServerMessageType;
-import com.neodem.bandaid.network.ComBaseClient;
 import com.neodem.bandaid.network.ComInterface;
 import com.neodem.bandaid.network.ComServer;
+import com.neodem.bandaid.proxy.PlayerProxy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,129 +17,140 @@ import java.util.Map;
  * <p/>
  * This handles all the server messages and passes them to and from the BandaidGameServer for processing
  * <p/>
+ * <p/>
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
- * Created Date: 4/9/14
+ * Created Date: 4/24/14
  */
-public final class BandaidServer implements ComInterface {
-
+public class BandaidServer implements BandaidGameServer {
     private static final Logger log = LogManager.getLogger(BandaidServer.class.getName());
-    private MessageProcesser messageHandler;
-    private ServerMessageTranslator serverMessageTranslator;
     private ComServer comServer;
-    private BandaidGameServer bandaidGameServer;
-
-    public class MessageProcesser extends ComBaseClient implements Runnable {
-
-        private ComInterface comInterface;
-        private String mostRecentMessage = null;
-
-        public MessageProcesser(String host, int port, ComInterface comInterface) {
-            super(host, port);
-            this.comInterface = comInterface;
-        }
-
-        public String getMostRecentMessage() {
-            return mostRecentMessage;
-        }
-
-        @Override
-        protected void handleMessage(int from, String msg) {
-            log.trace("Server : handle message : " + msg);
-            ServerMessageType type = serverMessageTranslator.unmarshalServerMessageTypeFromMessage(msg);
-
-            String replyMessage = null;
-            String gameId = serverMessageTranslator.unmarshalGameId(msg);
-
-            switch (type) {
-                case serverConnect:
-                    String name = serverMessageTranslator.unmarshalServerConnectName(msg);
-                    try {
-                        bandaidGameServer.connect(from, name);
-                    } catch (com.neodem.bandaid.gamemaster.PlayerError playerError) {
-                        replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
-                    }
-                    break;
-                case getAvailableGames:
-                    Map<String, String> availableGames = bandaidGameServer.getAvailableGames();
-                    replyMessage = serverMessageTranslator.marshalAvailableGames(availableGames);
-                    break;
-                case registerForGame:
-                    boolean result;
-                    try {
-                        result = bandaidGameServer.registerForGame(from, gameId, comInterface);
-                        replyMessage = serverMessageTranslator.marshalRegisterForGameReply(result);
-                    } catch (PlayerError playerError) {
-                        replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
-                    }
-                    break;
-                case serverGameStatus:
-                    String gameStatus = bandaidGameServer.getGameStatus(gameId);
-                    replyMessage = serverMessageTranslator.marshalGameStatus(gameStatus);
-                    break;
-                case serverStatus:
-                    String serverStatus = bandaidGameServer.getServerStatus();
-                    replyMessage = serverMessageTranslator.marshalServerStatus(serverStatus);
-                    break;
-                case reply:
-                    synchronized (this) {
-                        mostRecentMessage = msg;
-                        notify();
-                    }
-                    break;
-            }
-            ;
-
-            if (replyMessage != null) {
-                send(from, replyMessage);
-            }
-        }
-
-        public void run() {
-            init();
-        }
-    }
-
-    @Override
-    public void sendMessage(int dest, String msg) {
-        messageHandler.send(dest, msg);
-    }
-
-    @Override
-    public String sendAndGetReply(int dest, String msg) {
-        messageHandler.send(dest, msg);
-
-        synchronized (messageHandler) {
-            try {
-                messageHandler.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return messageHandler.getMostRecentMessage();
-    }
+    /**
+     * (gameId, gm)
+     */
+    private Map<String, GameMaster> gameMasters;
+    /**
+     * (netId, name)
+     */
+    private Map<Integer, String> connectedPlayers = Maps.newHashMap();
+    /**
+     * (netId, gameId)
+     */
+    private Map<Integer, String> playersInGames = Maps.newHashMap();
 
     public void start() {
 
         // start main communications system
         comServer.startComServer();
-
-        // set up our message processor
-        messageHandler = new MessageProcesser("localhost", 6969, this);
-        Thread mt = new Thread(messageHandler);
-        mt.setName("BandaidServer-MessageProcessor");
-        mt.start();
     }
 
-    public void setServerMessageTranslator(ServerMessageTranslator serverMessageTranslator) {
-        this.serverMessageTranslator = serverMessageTranslator;
+    @Override
+    public void connect(int networkId, String name) throws PlayerError {
+        if (connectedPlayers.containsKey(networkId)) {
+            String msg = "player already connected : " + networkId;
+            throw new PlayerError(msg);
+        }
+
+        connectedPlayers.put(networkId, name);
     }
 
-    public void setBandaidGameServer(BandaidGameServer bandaidGameServer) {
-        this.bandaidGameServer = bandaidGameServer;
+    @Override
+    public Map<String, String> getAvailableGames() {
+        Map<String, String> games = Maps.newHashMap();
+        for (String gameId : gameMasters.keySet()) {
+            games.put(gameId, gameMasters.get(gameId).getGameDescription());
+        }
+
+        return games;
+    }
+
+    @Override
+    public boolean registerForGame(int networkId, String gameId, ComInterface comInterface) throws PlayerError {
+
+        if (playersInGames.containsKey(networkId)) {
+            String msg = "player already in game : " + playersInGames.get(networkId);
+            throw new PlayerError(msg);
+        }
+
+        if (connectedPlayers.containsKey(networkId)) {
+            String playerName = connectedPlayers.get(networkId);
+            if (gameMasters.containsKey(gameId)) {
+                GameMaster gm = gameMasters.get(gameId);
+                PlayerProxy proxy = gm.makeNewProxy(playerName, networkId, comInterface);
+                boolean result = gm.registerPlayer(networkId, proxy);
+
+                if (gm.gameReady()) {
+                    initAndStartGame(gm);
+                }
+
+                if (result == true) {
+                    playersInGames.put(networkId, gameId);
+                }
+
+                return result;
+            } else {
+                String msg = "gameId does not exist : " + gameId;
+                throw new PlayerError(msg);
+            }
+        } else {
+            String msg = "This network ID is not connected : " + networkId;
+            throw new PlayerError(msg);
+        }
+    }
+
+    @Override
+    public String getServerStatus() {
+        StringBuffer b = new StringBuffer();
+        b.append(connectedPlayers.size());
+        b.append(" players connected.\n");
+        b.append(gameMasters.size());
+        b.append(" games available.\n");
+        b.append("--------------------------\n");
+
+        for (String gameId : gameMasters.keySet()) {
+            GameMaster gm = gameMasters.get(gameId);
+            b.append("game : ");
+            b.append(gameId);
+            b.append('\n');
+            b.append(gm.getGameStatus());
+            b.append('\n');
+        }
+
+        return b.toString();
+    }
+
+    @Override
+    public String getGameStatus(String gameId) {
+        GameMaster gm = gameMasters.get(gameId);
+        if (gm != null) {
+            return gm.getGameStatus();
+        }
+
+        return "This game is not registered";
+    }
+
+    private void initAndStartGame(GameMaster gm) {
+
+        log.info("initializing Game");
+        gm.initGame();
+
+        log.info("Starting Game");
+        gm.startGame();
+    }
+
+    public void setGameMasters(Map<String, GameMaster> gms) {
+        this.gameMasters = gms;
+    }
+
+    public void addGameMaster(String key, GameMaster gameMaster) {
+        if (gameMasters == null) {
+            gameMasters = new HashMap<>();
+        }
+        gameMasters.put(key, gameMaster);
     }
 
     public void setComServer(ComServer comServer) {
         this.comServer = comServer;
     }
+
+
 }
