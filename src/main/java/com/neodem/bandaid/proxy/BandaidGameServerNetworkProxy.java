@@ -18,20 +18,20 @@ import java.util.Map;
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 3/27/14
  */
-public class BandaidServerNetworkedProxyServerSide extends ComBaseClient {
+public class BandaidGameServerNetworkProxy extends ComBaseClient {
 
-    private static final Logger log = LogManager.getLogger(BandaidServerNetworkedProxyServerSide.class.getName());
+    private static final Logger log = LogManager.getLogger(BandaidGameServerNetworkProxy.class.getName());
     private final ServerMessageTranslator serverMessageTranslator;
     private BandaidGameServer bandaidGameServer;
 
-    public BandaidServerNetworkedProxyServerSide() {
+    public BandaidGameServerNetworkProxy() {
         super("localhost", 6969);
         this.serverMessageTranslator = new JsonServerMessageTranslator();
     }
 
     @Override
     protected String getClientName() {
-        return "BandaidServerNetworkedProxyServerSide";
+        return "BandaidGameServerNetworkProxy";
     }
 
     @Override

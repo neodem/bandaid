@@ -12,17 +12,13 @@ import java.util.HashSet;
 import java.util.Map;
 
 /**
- * top level server!
- * <p/>
- * This handles all the server messages and passes them to and from the BandaidGameServer for processing.
- * Fire this up and call start();
- * <p/>
+ * handles managing connections from players and putting them into games and starting the games
  * <p/>
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 4/24/14
  */
-public class DefaultBandaidGameServer implements BandaidGameServer {
-    private static final Logger log = LogManager.getLogger(DefaultBandaidGameServer.class.getName());
+public class BandaidGameServerImpl implements BandaidGameServer {
+    private static final Logger log = LogManager.getLogger(BandaidGameServerImpl.class.getName());
     /**
      * (gameId, gm)
      */

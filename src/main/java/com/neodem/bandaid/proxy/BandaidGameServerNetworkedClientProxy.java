@@ -18,9 +18,9 @@ import java.util.Map;
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 3/27/14
  */
-public class BandaidServerNetworkedProxyClientside implements BandaidGameServer {
+public class BandaidGameServerNetworkedClientProxy implements BandaidGameServer {
 
-    private static final Logger log = LogManager.getLogger(BandaidServerNetworkedProxyClientside.class.getName());
+    private static final Logger log = LogManager.getLogger(BandaidGameServerNetworkedClientProxy.class.getName());
     private final ServerMessageTranslator serverMessageTranslator;
     private final MessageHandler messageHandler = new MessageHandler("localhost", 6969);
     private Thread messageHandlerThread = null;
@@ -31,7 +31,7 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
 
         @Override
         protected String getClientName() {
-            return "BandaidServerNetworkedProxyClientside";
+            return "BandaidGameServerNetworkedClientProxy";
         }
 
         public MessageHandler(String host, int port) {
@@ -56,13 +56,13 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
         }
     }
 
-    public BandaidServerNetworkedProxyClientside() {
+    public BandaidGameServerNetworkedClientProxy() {
         this.serverMessageTranslator = new JsonServerMessageTranslator();
     }
 
     public void init() {
         messageHandlerThread = new Thread(messageHandler);
-        messageHandlerThread.setName("BandaidServerNetworkedProxyClientside-MessageHandler");
+        messageHandlerThread.setName("BandaidGameServerNetworkedClientProxy-MessageHandler");
         messageHandlerThread.start();
     }
 

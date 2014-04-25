@@ -1,5 +1,6 @@
-package com.neodem.bandaid.gamemaster;
+package com.neodem.bandaid.testGame;
 
+import com.neodem.bandaid.gamemaster.BaseGameMaster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +33,7 @@ public class SimpleGameMaster extends BaseGameMaster {
 
     @Override
     public String getGameDescription() {
-        return "Simple Game Master";
+        return "Simple Game Master desctiption";
     }
 
     @Override

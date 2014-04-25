@@ -17,9 +17,13 @@ public enum ServerMessageType {
 
     serverStatus,
 
+    error,
+
+    //=== game message related types
+
     gameMessage,
 
     gameMessageNeedsReply,
 
-    unknown, error;
+    unknown;
 }
