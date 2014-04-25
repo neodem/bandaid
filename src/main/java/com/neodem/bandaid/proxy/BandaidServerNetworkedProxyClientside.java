@@ -98,7 +98,7 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
     public boolean registerForGame(String playerName, String gameId) throws PlayerError {
         String m = serverMessageTranslator.marshalRegisterForGameRequest(playerName, gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
-        return serverMessageTranslator.unmarshalServerReplyRegisterForGame(reply);
+        return serverMessageTranslator.unmarshalRegisterForGameReply(reply);
     }
 
     @Override
@@ -110,8 +110,8 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
 
     @Override
     public String getGameStatus(String gameId) {
-        String m = serverMessageTranslator.marshalServerGameStatus(gameId);
+        String m = serverMessageTranslator.marshalGetGameStatusRequest(gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
-        return serverMessageTranslator.unmarshalServerReplyGameStatus(reply);
+        return serverMessageTranslator.unmarshalGetGameStatusReply(reply);
     }
 }

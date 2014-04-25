@@ -42,26 +42,24 @@ public interface ServerMessageTranslator {
 
     String unmarshalRegisterForGameRequestGameId(String msg);
 
-
-    // --- mixed
-
-    String marshalGameMessageExpectsReply(String gameMessage);
-
     String marshalRegisterForGameReply(boolean result);
 
-    boolean unmarshalServerReplyRegisterForGame(String reply);
+    boolean unmarshalRegisterForGameReply(String reply);
 
-    String marshalServerGameStatus(String gameId);
+    //getGameStatus
+    String marshalGetGameStatusRequest(String gameId);
 
-    String unmarshalServerReplyGameStatus(String reply);
-
-    String marshalPlayerError(PlayerError playerError);
-
-    String marshalServerReplyBoolean(boolean result);
+    String unmarshalGetGameStatusReply(String reply);
 
     String marshalServerGameStatusReply(String gameStatus);
 
+    String unmarshalServerGameStatusRequestGameId(String msg);
+
+    // -- misc
+    String marshalPlayerError(PlayerError playerError);
+
     void checkReplyForPlayerError(String reply) throws PlayerError;
+
 
     /// game messages
 
@@ -69,6 +67,6 @@ public interface ServerMessageTranslator {
 
     String unmarshalGameMessage(String m);
 
+    String marshalGameMessageExpectsReply(String gameMessage);
 
-    String unmarshalServerGameStatusRequestGameId(String msg);
 }

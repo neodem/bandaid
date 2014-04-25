@@ -170,9 +170,14 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
         setReplyFlag(j);
         setMessageTypeIntoJSONObject(ServerMessageType.registerForGame, j);
 
-        //TODO
+        JsonUtil.setBooleanIntoJSONObject(result, j);
 
         return j.toString();
+    }
+
+    @Override
+    public boolean unmarshalRegisterForGameReply(String m) {
+        return JsonUtil.getBooleanFromJsonMessage(m);
     }
 
     @Override
@@ -209,38 +214,30 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String marshalServerGameStatus(String gameId) {
+    public String marshalGetGameStatusRequest(String gameId) {
         JSONObject j = new JSONObject();
         setMessageTypeIntoJSONObject(ServerMessageType.serverGameStatus, j);
-        JsonUtil.setGenericStringIntoJSONObject(gameId, j);
+        JsonUtil.setStringIntoJsonObject(GAMEID, gameId, j);
         return j.toString();
     }
 
     @Override
-    public boolean unmarshalServerReplyRegisterForGame(String reply) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public String unmarshalServerReplyGameStatus(String reply) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-
-    @Override
-    public String unmarshalServerGameStatusRequestGameId(String msg) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-
-    @Override
-    public String marshalServerReplyBoolean(boolean result) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public String unmarshalServerGameStatusRequestGameId(String m) {
+        return JsonUtil.getStringFromJsonMessage(GAMEID, m);
     }
 
     @Override
     public String marshalServerGameStatusReply(String gameStatus) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        JSONObject j = new JSONObject();
+        setReplyFlag(j);
+        setMessageTypeIntoJSONObject(ServerMessageType.serverGameStatus, j);
+        JsonUtil.setGenericStringIntoJSONObject(gameStatus, j);
+        return j.toString();
+    }
+
+    @Override
+    public String unmarshalGetGameStatusReply(String m) {
+        return JsonUtil.getGenericStringFromJsonMessage(m);
     }
 
     @Override

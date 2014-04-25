@@ -21,7 +21,7 @@ public interface BandaidGameServer {
     /**
      * ask the server for a list of available games
      *
-     * @return a map of game descriptions and their identifiers
+     * @return a map of game descriptions and their identifiers <id, description>
      */
     Map<String, String> getAvailableGames();
 

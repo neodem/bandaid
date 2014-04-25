@@ -68,7 +68,11 @@ public class BandaidGameServerTest {
 
         Map<String, String> availableGames = clientProxy.getAvailableGames();
 
-        clientProxy.registerForGame("testName", availableGames.keySet().iterator().next());
+        String firstGameId = availableGames.keySet().iterator().next();
+        System.out.println(clientProxy.getGameStatus(firstGameId));
+
+
+        clientProxy.registerForGame("testName", firstGameId);
 
     }
 

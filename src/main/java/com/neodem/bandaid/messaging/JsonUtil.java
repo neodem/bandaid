@@ -16,8 +16,8 @@ public class JsonUtil {
     private static final String BOOL = "Boolean";
     private static final String STRING = "String";
     private static final String INTEGER = "Integer";
-    private static final String KEY = "k";
-    private static final String VALUE = "v";
+    private static final String KEY = "key";
+    private static final String VALUE = "value";
 
     public static void setBooleanIntoJSONObject(boolean bool, JSONObject j) {
         if (j != null) {
@@ -111,6 +111,21 @@ public class JsonUtil {
         }
     }
 
+    public static boolean getBooleanFromJsonMessage(String m) {
+        boolean result = false;
+
+        if (m != null) {
+            try {
+                JSONObject j = new JSONObject(m);
+                result = j.getBoolean(BOOL);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
     public static String getStringFromJsonMessage(String key, String message) {
         String result = null;
 
@@ -128,6 +143,21 @@ public class JsonUtil {
 
     public static void setGenericStringIntoJSONObject(String string, JSONObject j) {
         setStringIntoJsonObject(STRING, string, j);
+    }
+
+    public static String getGenericStringFromJsonMessage(String message) {
+        String result = null;
+
+        if (message != null) {
+            try {
+                JSONObject j = new JSONObject(message);
+                result = j.getString(STRING);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
     }
 
     public static void setIntegerIntoJSONObject(Integer i, JSONObject j) {
