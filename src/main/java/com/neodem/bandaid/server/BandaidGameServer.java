@@ -6,6 +6,7 @@ import java.util.Map;
 
 /**
  * to communicate with the Bandaid Game Server
+ * <p/>
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 4/9/14
  */
