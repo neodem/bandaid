@@ -31,6 +31,37 @@ public class BandaidGameServerImpl implements BandaidGameServer {
      * (playerName, gameId)
      */
     private Map<String, String> playersInGames = new HashMap<>();
+    private Thread gameStartCheckerThread;
+
+    /**
+     * will start full games
+     */
+    private class GameStartChecker implements Runnable {
+        public void run() {
+            Thread thisThread = Thread.currentThread();
+            while (gameStartCheckerThread == thisThread) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                }
+
+                for (String gameId : gameMasters.keySet()) {
+                    GameMaster gm = gameMasters.get(gameId);
+                    if (gm.isGameReadyToStart()) {
+                        log.info("initializing Game {}", gameId);
+                        gm.initGame();
+
+                        log.info("Starting Game {}", gameId);
+                        gm.startGame();
+                    }
+                }
+            }
+        }
+    }
+
+    public BandaidGameServerImpl() {
+        startGameStartChecker();
+    }
 
     @Override
     public void connect(String playerName) throws PlayerError {
@@ -64,9 +95,12 @@ public class BandaidGameServerImpl implements BandaidGameServer {
             if (gameMasters.containsKey(gameId)) {
                 GameMaster gm = gameMasters.get(gameId);
 
-                //todo something needs to happen here.
+                boolean result = gm.registerPlayer(playerName);
+                if (result == true) {
+                    playersInGames.put(playerName, gameId);
+                }
 
-                return true;
+                return result;
             } else {
                 String msg = "gameId does not exist : " + gameId;
                 throw new PlayerError(msg);
@@ -108,13 +142,10 @@ public class BandaidGameServerImpl implements BandaidGameServer {
         return "This game is not registered";
     }
 
-    private void initAndStartGame(GameMaster gm) {
-
-        log.info("initializing Game");
-        gm.initGame();
-
-        log.info("Starting Game");
-        gm.startGame();
+    private void startGameStartChecker() {
+        gameStartCheckerThread = new Thread(new GameStartChecker());
+        gameStartCheckerThread.setName("BandaidGameServerImpl-gameStartChecker");
+        gameStartCheckerThread.start();
     }
 
     public void setGameMasters(Map<String, GameMaster> gms) {

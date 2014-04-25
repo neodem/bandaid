@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 public class SimpleGameMaster extends BaseGameMaster {
     private static final Logger log = LogManager.getLogger(SimpleGameMaster.class.getName());
 
+    private boolean ready = false;
+
     @Override
     protected Logger getLog() {
         return log;
@@ -27,8 +29,8 @@ public class SimpleGameMaster extends BaseGameMaster {
     }
 
     @Override
-    public boolean gameReady() {
-        return true;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean isGameReadyToStart() {
+        return ready;
     }
 
     @Override
@@ -38,6 +40,7 @@ public class SimpleGameMaster extends BaseGameMaster {
 
     @Override
     public boolean registerPlayer(String playerName) {
+        ready = true;
         return true;
     }
 

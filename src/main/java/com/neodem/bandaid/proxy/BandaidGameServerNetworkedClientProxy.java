@@ -25,7 +25,7 @@ public class BandaidGameServerNetworkedClientProxy implements BandaidGameServer 
     private final MessageHandler messageHandler = new MessageHandler("localhost", 6969);
     private Thread messageHandlerThread = null;
 
-    public class MessageHandler extends ComBaseClient implements Runnable {
+    private class MessageHandler extends ComBaseClient implements Runnable {
 
         private String mostRecentMessage = null;
 
