@@ -1,4 +1,4 @@
-package com.neodem.bandaid.server;
+package com.neodem.bandaid.old;
 
 import com.neodem.bandaid.network.ComInterface;
 

@@ -26,7 +26,7 @@ public interface GameMaster {
      *
      * @return if the game is filled and ready to start
      */
-    boolean gameReady();
+    boolean isGameReadyToStart();
 
     String getGameDescription();
 
