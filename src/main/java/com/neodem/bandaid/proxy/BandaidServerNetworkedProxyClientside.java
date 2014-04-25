@@ -99,6 +99,10 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
     public PlayerCallback registerForGame(String playerName, String gameId) throws PlayerError {
         String m = serverMessageTranslator.marshalRegisterForGameRequest(playerName, gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
+
+        // TODO the reply should contain something to tell us how to create a PlayerCallback proxy
+        // which we create here and then return to the user
+
         return serverMessageTranslator.unmarshalServerReplyRegisterForGame(reply);
     }
 

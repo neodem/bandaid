@@ -25,8 +25,6 @@ public class BandaidServerNetworkedProxyServerSide extends ComBaseClient {
     private final ServerMessageTranslator serverMessageTranslator;
     private BandaidGameServer bandaidGameServer;
 
-    private static final String OK_MESSSAGE = "{\"OK\"}";
-
     public BandaidServerNetworkedProxyServerSide() {
         super("localhost", 6969);
         this.serverMessageTranslator = new JsonServerMessageTranslator();
@@ -68,6 +66,11 @@ public class BandaidServerNetworkedProxyServerSide extends ComBaseClient {
                 gameId = serverMessageTranslator.unmarshalRegisterForGameRequestGameId(msg);
                 try {
                     result = bandaidGameServer.registerForGame(playerName, gameId);
+
+                    // TODO we need to determine how to send a reply message here that will
+                    // specify how to create the correct player proxy for the given game
+                    // and then send it to the client
+
                     replyMessage = serverMessageTranslator.marshalRegisterForGameReply(result);
                 } catch (PlayerError playerError) {
                     replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
