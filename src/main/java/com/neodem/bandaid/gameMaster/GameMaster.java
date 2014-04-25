@@ -1,12 +1,10 @@
 package com.neodem.bandaid.gamemaster;
 
-import com.neodem.bandaid.proxy.PlayerProxyFactory;
-
 /**
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 3/31/14
  */
-public interface GameMaster extends PlayerProxyFactory {
+public interface GameMaster {
 
     /**
      * this is where the GM needs to alert it's registered players of it's ID (so they can talk back)
@@ -27,11 +25,12 @@ public interface GameMaster extends PlayerProxyFactory {
     String getGameDescription();
 
     /**
-     * @param networkId
-     * @param player
-     * @return if ok
+     * register a player for the game
+     *
+     * @param playerName the name of the player
+     * @return an interface the player can use to interact with the game
      */
-    boolean registerPlayer(int networkId, PlayerCallback player);
+    boolean registerPlayer(String playerName);
 
     String getGameStatus();
 }

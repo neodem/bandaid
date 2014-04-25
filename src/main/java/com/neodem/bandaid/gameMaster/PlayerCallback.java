@@ -5,6 +5,7 @@ package com.neodem.bandaid.gamemaster;
  * Created Date: 3/31/14
  */
 public interface PlayerCallback {
+
     /**
      * get the name of the player
      *

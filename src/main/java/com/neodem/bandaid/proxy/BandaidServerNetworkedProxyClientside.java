@@ -1,6 +1,5 @@
 package com.neodem.bandaid.proxy;
 
-import com.neodem.bandaid.gamemaster.PlayerCallback;
 import com.neodem.bandaid.gamemaster.PlayerError;
 import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
@@ -25,7 +24,6 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
     private final ServerMessageTranslator serverMessageTranslator;
     private final MessageHandler messageHandler = new MessageHandler("localhost", 6969);
     private Thread messageHandlerThread = null;
-    private PlayerCallbackProxyFactory playerCallbackProxyFactory;
 
     public class MessageHandler extends ComBaseClient implements Runnable {
 
@@ -97,14 +95,10 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
     }
 
     @Override
-    public PlayerCallback registerForGame(String playerName, String gameId) throws PlayerError {
+    public boolean registerForGame(String playerName, String gameId) throws PlayerError {
         String m = serverMessageTranslator.marshalRegisterForGameRequest(playerName, gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
-
-        String playerCallbackType = serverMessageTranslator.unmarshalServerReplyRegisterForGame(reply);
-        PlayerCallback callback = playerCallbackProxyFactory.makePlayerCallbackProxy(playerCallbackType);
-
-        return callback;
+        return serverMessageTranslator.unmarshalServerReplyRegisterForGame(reply);
     }
 
     @Override
@@ -119,9 +113,5 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
         String m = serverMessageTranslator.marshalServerGameStatus(gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
         return serverMessageTranslator.unmarshalServerReplyGameStatus(reply);
-    }
-
-    public void setPlayerCallbackProxyFactory(PlayerCallbackProxyFactory playerCallbackProxyFactory) {
-        this.playerCallbackProxyFactory = playerCallbackProxyFactory;
     }
 }

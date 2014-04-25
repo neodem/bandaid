@@ -47,9 +47,9 @@ public interface ServerMessageTranslator {
 
     String marshalGameMessageExpectsReply(String gameMessage);
 
-    String marshalRegisterForGameReply(String playerCallbackType);
+    String marshalRegisterForGameReply(boolean result);
 
-    String unmarshalServerReplyRegisterForGame(String reply);
+    boolean unmarshalServerReplyRegisterForGame(String reply);
 
     String marshalServerGameStatus(String gameId);
 

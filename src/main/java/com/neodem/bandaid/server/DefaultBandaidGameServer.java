@@ -2,7 +2,6 @@ package com.neodem.bandaid.server;
 
 import com.google.common.collect.Maps;
 import com.neodem.bandaid.gamemaster.GameMaster;
-import com.neodem.bandaid.gamemaster.PlayerCallback;
 import com.neodem.bandaid.gamemaster.PlayerError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,7 +57,7 @@ public class DefaultBandaidGameServer implements BandaidGameServer {
     }
 
     @Override
-    public PlayerCallback registerForGame(String playerName, String gameId) throws PlayerError {
+    public boolean registerForGame(String playerName, String gameId) throws PlayerError {
 
         if (playersInGames.containsKey(playerName)) {
             String msg = "player already in game : " + playersInGames.get(playerName);
@@ -69,17 +68,9 @@ public class DefaultBandaidGameServer implements BandaidGameServer {
             if (gameMasters.containsKey(gameId)) {
                 GameMaster gm = gameMasters.get(gameId);
 
-                PlayerCallback pc = gm.registerPlayer(playerName);
+                //todo something needs to happen here.
 
-                if (gm.gameReady()) {
-                    initAndStartGame(gm);
-                }
-
-                if (pc != null) {
-                    playersInGames.put(playerName, gameId);
-                }
-
-                return pc;
+                return true;
             } else {
                 String msg = "gameId does not exist : " + gameId;
                 throw new PlayerError(msg);

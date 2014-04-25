@@ -1,7 +1,5 @@
 package com.neodem.bandaid.gamemaster;
 
-import com.neodem.bandaid.network.ComInterface;
-import com.neodem.bandaid.proxy.PlayerProxy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,8 +36,8 @@ public class SimpleGameMaster extends BaseGameMaster {
     }
 
     @Override
-    public boolean registerPlayer(int networkId, PlayerCallback player) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean registerPlayer(String playerName) {
+        return true;
     }
 
     @Override
@@ -47,8 +45,4 @@ public class SimpleGameMaster extends BaseGameMaster {
         return "Ready to Play";
     }
 
-    @Override
-    public PlayerProxy makeNewProxy(String playerName, int myNetworkId, ComInterface server) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 }

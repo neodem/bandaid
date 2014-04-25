@@ -1,6 +1,5 @@
 package com.neodem.bandaid.proxy;
 
-import com.neodem.bandaid.gamemaster.PlayerCallback;
 import com.neodem.bandaid.gamemaster.PlayerError;
 import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
@@ -64,9 +63,8 @@ public class BandaidServerNetworkedProxyServerSide extends ComBaseClient {
                 playerName = serverMessageTranslator.unmarshalRegisterForGameRequestName(msg);
                 gameId = serverMessageTranslator.unmarshalRegisterForGameRequestGameId(msg);
                 try {
-                    PlayerCallback result = bandaidGameServer.registerForGame(playerName, gameId);
-                    String playerCallbackType = result.getPlayerCallbackType();
-                    replyMessage = serverMessageTranslator.marshalRegisterForGameReply(playerCallbackType);
+                    boolean result = bandaidGameServer.registerForGame(playerName, gameId);
+                    replyMessage = serverMessageTranslator.marshalRegisterForGameReply(result);
                 } catch (PlayerError playerError) {
                     replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
                 }
