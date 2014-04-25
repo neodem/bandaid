@@ -10,9 +10,9 @@ import com.neodem.bandaid.network.ComInterface;
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 4/9/14
  */
-public final class BandaidServer2 implements ComInterface {
+public final class BandaidServerOldCrap implements ComInterface {
 
-    //    private static final Logger log = LogManager.getLogger(BandaidServer2.class.getName());
+    //    private static final Logger log = LogManager.getLogger(BandaidServerOldCrap.class.getName());
 //    private MessageProcesser messageHandler;
 //    private ServerMessageTranslator serverMessageTranslator;
 //    private ComServer comServer;
@@ -119,7 +119,7 @@ public final class BandaidServer2 implements ComInterface {
 //        // set up our message processor
 //        messageHandler = new MessageProcesser("localhost", 6969, this);
 //        Thread mt = new Thread(messageHandler);
-//        mt.setName("BandaidServer2-MessageProcessor");
+//        mt.setName("BandaidServerOldCrap-MessageProcessor");
 //        mt.start();
 //    }
 //

@@ -61,17 +61,12 @@ public class BandaidServerNetworkedProxyServerSide extends ComBaseClient {
                 replyMessage = serverMessageTranslator.marshalGetAvailableGamesReply(availableGames);
                 break;
             case registerForGame:
-                PlayerCallback result;
                 playerName = serverMessageTranslator.unmarshalRegisterForGameRequestName(msg);
                 gameId = serverMessageTranslator.unmarshalRegisterForGameRequestGameId(msg);
                 try {
-                    result = bandaidGameServer.registerForGame(playerName, gameId);
-
-                    // TODO we need to determine how to send a reply message here that will
-                    // specify how to create the correct player proxy for the given game
-                    // and then send it to the client
-
-                    replyMessage = serverMessageTranslator.marshalRegisterForGameReply(result);
+                    PlayerCallback result = bandaidGameServer.registerForGame(playerName, gameId);
+                    String playerCallbackType = result.getPlayerCallbackType();
+                    replyMessage = serverMessageTranslator.marshalRegisterForGameReply(playerCallbackType);
                 } catch (PlayerError playerError) {
                     replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
                 }

@@ -25,6 +25,7 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
     private final ServerMessageTranslator serverMessageTranslator;
     private final MessageHandler messageHandler = new MessageHandler("localhost", 6969);
     private Thread messageHandlerThread = null;
+    private PlayerCallbackProxyFactory playerCallbackProxyFactory;
 
     public class MessageHandler extends ComBaseClient implements Runnable {
 
@@ -100,10 +101,10 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
         String m = serverMessageTranslator.marshalRegisterForGameRequest(playerName, gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
 
-        // TODO the reply should contain something to tell us how to create a PlayerCallback proxy
-        // which we create here and then return to the user
+        String playerCallbackType = serverMessageTranslator.unmarshalServerReplyRegisterForGame(reply);
+        PlayerCallback callback = playerCallbackProxyFactory.makePlayerCallbackProxy(playerCallbackType);
 
-        return serverMessageTranslator.unmarshalServerReplyRegisterForGame(reply);
+        return callback;
     }
 
     @Override
@@ -118,5 +119,9 @@ public class BandaidServerNetworkedProxyClientside implements BandaidGameServer 
         String m = serverMessageTranslator.marshalServerGameStatus(gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
         return serverMessageTranslator.unmarshalServerReplyGameStatus(reply);
+    }
+
+    public void setPlayerCallbackProxyFactory(PlayerCallbackProxyFactory playerCallbackProxyFactory) {
+        this.playerCallbackProxyFactory = playerCallbackProxyFactory;
     }
 }
