@@ -12,7 +12,7 @@ import java.net.UnknownHostException;
 public abstract class ComBaseClient {
 
     private static final Logger log = LogManager.getLogger(ComBaseClient.class.getName());
-    private final String serverName;
+    private final String hostName;
     private final int port;
     private final DataInputStream console = null;
     private final ComMessageTranslator mt = new DefaultComMessageTranslator();
@@ -57,15 +57,17 @@ public abstract class ComBaseClient {
     }
 
     public ComBaseClient(String host, int port) {
-        this.serverName = host;
+        this.hostName = host;
         this.port = port;
     }
 
+    protected abstract String getClientName();
+
     public void init() {
-        log.info("Establishing connection. Please wait ...");
+        log.info("{} is Establishing connection with ComServer. Please wait ...", getClientName());
         try {
-            socket = new Socket(serverName, port);
-            log.info("Connected to ComServer : " + socket);
+            socket = new Socket(hostName, port);
+            log.info("{} is Connected to ComServer : {}", getClientName(), socket);
             streamOut = new DataOutputStream(socket.getOutputStream());
             startClientThread();
         } catch (UnknownHostException uhe) {
@@ -93,7 +95,7 @@ public abstract class ComBaseClient {
     public void send(int destination, String message) {
         String m = mt.makeMessage(destination, message);
 
-        log.trace("send to ComServer to route to {} : {}", destination, message);
+        log.trace("{} : Send to ComServer to route to {} : {}", getClientName(), destination, message);
 
         try {
             streamOut.writeUTF(m);

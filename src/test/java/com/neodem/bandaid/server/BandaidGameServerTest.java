@@ -3,16 +3,15 @@ package com.neodem.bandaid.server;
 import com.neodem.bandaid.gamemaster.GameMaster;
 import com.neodem.bandaid.gamemaster.PlayerError;
 import com.neodem.bandaid.gamemaster.SimpleGameMaster;
-import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
-import com.neodem.bandaid.network.ComInterface;
 import com.neodem.bandaid.network.ComServer;
-import com.neodem.bandaid.proxy.BandaidServerNetworkedProxy;
+import com.neodem.bandaid.proxy.BandaidServerNetworkedProxyClientside;
+import com.neodem.bandaid.proxy.BandaidServerNetworkedProxyServerSide;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.mockito.Mockito.*;
+import java.util.Map;
 
 /**
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
@@ -20,26 +19,11 @@ import static org.mockito.Mockito.*;
  */
 public class BandaidGameServerTest {
 
-    private BandaidServer server;
+    private DefaultBandaidGameServer server;
 
-    private BandaidServerNetworkedProxy serviceProxy;
+    private BandaidServerNetworkedProxyServerSide serviceProxy;
+    private BandaidServerNetworkedProxyClientside clientProxy;
 
-    private class TestBandaidServerNetworkedProxy extends BandaidServerNetworkedProxy {
-        @Override
-        public String handleMessageWithReply(String m) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public void handleAsynchonousMessage(String m) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public boolean registerForGame(int networkId, String gameId, ComInterface comInterface) throws PlayerError {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-    }
 
     private ServerMessageTranslator serverMessageTranslator;
     private ComServer comServer;
@@ -53,22 +37,17 @@ public class BandaidGameServerTest {
         gameMaster = new SimpleGameMaster();
 
         comServer = new ComServer();
+        comServer.startComServer();
 
-        server = new BandaidServer();
-        server.setComServer(comServer);
+        server = new DefaultBandaidGameServer();
         server.addGameMaster("simpleGameMaster", gameMaster);
 
-        server.start();
-
-//        mockBandaidGameServer = mock(BandaidGameServer.class);
-//        server.setBandaidGameServer(mockBandaidGameServer);
-//          serverMessageTranslator = new JsonServerMessageTranslator();
-//        server.setServerMessageTranslator(serverMessageTranslator);
-
-
-
-        serviceProxy = new TestBandaidServerNetworkedProxy();
+        serviceProxy = new BandaidServerNetworkedProxyServerSide();
+        serviceProxy.setBandaidGameServer(server);
         serviceProxy.init();
+
+        clientProxy = new BandaidServerNetworkedProxyClientside();
+        clientProxy.init();
     }
 
     @After
@@ -82,9 +61,14 @@ public class BandaidGameServerTest {
     }
 
     @Test
-    public void testSomething() {
+    public void testSomething() throws PlayerError {
+        System.out.println(clientProxy.getServerStatus());
+        clientProxy.connect("testName");
+        System.out.println(clientProxy.getServerStatus());
 
-        System.out.println(serviceProxy.getServerStatus());
+        Map<String, String> availableGames = clientProxy.getAvailableGames();
+
+        clientProxy.registerForGame("testName", availableGames.keySet().iterator().next());
 
     }
 

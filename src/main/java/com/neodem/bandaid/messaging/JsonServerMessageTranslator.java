@@ -1,6 +1,7 @@
 package com.neodem.bandaid.messaging;
 
 import com.neodem.bandaid.gamemaster.PlayerError;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,8 +16,10 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     private static final String TYPE = "ServerMessageType";
     private static final String GAMEMESSAGE = "GameMessage";
     private static final String GAMEID = "GameId";
-
+    private static final String PLAYERNAME = "PlayerName";
+    private static final String AVAILABLEGAMEMAP = "AvailableGames";
     private static final String PLAYERERROR = "PlayerError";
+    private static final String REPLY = "isReply";
 
     @Override
     public ServerMessageType unmarshalServerMessageTypeFromMessage(String m) {
@@ -61,7 +64,6 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
         return result;
     }
 
-
     @Override
     public String marshalGameMessageExpectsReply(String gameMessage) {
         JSONObject j = new JSONObject();
@@ -71,58 +73,147 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String marshalServerConnect(int networkId, String name) {
+    public String marshalConnectRequest(String playerName) {
         JSONObject j = new JSONObject();
         setMessageTypeIntoJSONObject(ServerMessageType.serverConnect, j);
-        JsonUtil.setStringIntoJSONObject(name, j);
-        JsonUtil.setIntegerIntoJSONObject(networkId, j);
+        JsonUtil.setGenericStringIntoJSONObject(playerName, j);
         return j.toString();
     }
 
     @Override
-    public String marshalServerGetAvailableGames() {
+    public String unmarshalConnectRequestName(String m) {
+        String result = null;
+
+        if (m != null) {
+            try {
+                JSONObject j = new JSONObject(m);
+                result = JsonUtil.getStringFromJsonObject(j);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public String marshalServerConnectOkReply() {
+        JSONObject j = new JSONObject();
+        setReplyFlag(j);
+        setMessageTypeIntoJSONObject(ServerMessageType.serverConnect, j);
+        JsonUtil.setGenericStringIntoJSONObject("OK", j);
+        return j.toString();
+    }
+
+    @Override
+    public String marshalGetAvailableGamesRequest() {
         JSONObject j = new JSONObject();
         setMessageTypeIntoJSONObject(ServerMessageType.getAvailableGames, j);
         return j.toString();
     }
 
     @Override
-    public String marshalRegisterForGameRequest(int networkId, String gameId) {
+    public String marshalGetAvailableGamesReply(Map<String, String> availableGames) {
         JSONObject j = new JSONObject();
-        setMessageTypeIntoJSONObject(ServerMessageType.registerForGame, j);
-        JsonUtil.setStringIntoJSONObject(gameId, j);
-        JsonUtil.setIntegerIntoJSONObject(networkId, j);
+        setReplyFlag(j);
+        setMessageTypeIntoJSONObject(ServerMessageType.getAvailableGames, j);
+
+        JSONArray gameMap = JsonUtil.marshalStringStringMapIntoJsonArray(availableGames);
+        try {
+            j.put(AVAILABLEGAMEMAP, gameMap);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         return j.toString();
     }
 
     @Override
-    public String marshalRegisterForGameReply(boolean result) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Map<String, String> unmarshalGetAvailableGamesReply(String m) {
+        Map<String, String> availableGames = null;
+
+        if (m != null) {
+            try {
+                JSONObject j = new JSONObject(m);
+                JSONArray gameMap = j.getJSONArray(AVAILABLEGAMEMAP);
+                availableGames = JsonUtil.getStringStringMapFromJsonArray(gameMap);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return availableGames;
     }
 
     @Override
-    public String marshalServerRequestGetServerStatus() {
+    public String marshalRegisterForGameRequest(String playerName, String gameId) {
+        JSONObject j = new JSONObject();
+        setMessageTypeIntoJSONObject(ServerMessageType.registerForGame, j);
+        JsonUtil.setStringIntoJsonObject(PLAYERNAME, playerName, j);
+        JsonUtil.setStringIntoJsonObject(GAMEID, gameId, j);
+        return j.toString();
+    }
+
+    @Override
+    public String unmarshalRegisterForGameRequestName(String m) {
+        return JsonUtil.getStringFromJsonMessage(PLAYERNAME, m);
+    }
+
+    @Override
+    public String unmarshalRegisterForGameRequestGameId(String m) {
+        return JsonUtil.getStringFromJsonMessage(GAMEID, m);
+    }
+
+    @Override
+    public String marshalRegisterForGameReply(boolean result) {
+        JSONObject j = new JSONObject();
+        setReplyFlag(j);
+        setMessageTypeIntoJSONObject(ServerMessageType.registerForGame, j);
+
+        //TODO
+
+        return j.toString();
+    }
+
+    @Override
+    public String marshalGetServerStatusRequest() {
         JSONObject j = new JSONObject();
         setMessageTypeIntoJSONObject(ServerMessageType.serverStatus, j);
         return j.toString();
     }
 
     @Override
-    public String marshalServerGameStatus(String gameId) {
+    public String marshalGetServerStatusReply(String serverStatus) {
         JSONObject j = new JSONObject();
-        setMessageTypeIntoJSONObject(ServerMessageType.serverGameStatus, j);
-        JsonUtil.setStringIntoJSONObject(gameId, j);
+        setReplyFlag(j);
+        setMessageTypeIntoJSONObject(ServerMessageType.serverStatus, j);
+        JsonUtil.setGenericStringIntoJSONObject(serverStatus, j);
         return j.toString();
     }
 
     @Override
-    public String marshalAvailableGames(Map<String, String> availableGames) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public String unmarshalGetServerStatusReply(String m) {
+        JSONObject j;
+        String result = null;
+
+        if (m != null) {
+            try {
+                j = new JSONObject(m);
+                result = JsonUtil.getStringFromJsonObject(j);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
     }
 
     @Override
-    public Map<String, String> unmarshalAvailableGames(String reply) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public String marshalServerGameStatus(String gameId) {
+        JSONObject j = new JSONObject();
+        setMessageTypeIntoJSONObject(ServerMessageType.serverGameStatus, j);
+        JsonUtil.setGenericStringIntoJSONObject(gameId, j);
+        return j.toString();
     }
 
     @Override
@@ -131,33 +222,15 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String unmarshalServerReplyServerStatus(String reply) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public String unmarshalServerReplyGameStatus(String reply) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+
     @Override
-    public String unmarshalGameId(String msg) {
+    public String unmarshalServerGameStatusRequestGameId(String msg) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
-
-    @Override
-    public String unmarshalServerConnectName(String msg) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public String marshalPlayerError(PlayerError playerError) {
-        JSONObject j = new JSONObject();
-        setMessageTypeIntoJSONObject(ServerMessageType.reply, j);
-        setKeyValueStringsIntoJSONObject(PLAYERERROR, playerError.getMessage(), j);
-        return j.toString();
-    }
-
 
 
     @Override
@@ -166,13 +239,17 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String marshalGameStatus(String gameStatus) {
+    public String marshalServerGameStatusReply(String gameStatus) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public String marshalServerStatus(String serverStatus) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public String marshalPlayerError(PlayerError playerError) {
+        JSONObject j = new JSONObject();
+        setReplyFlag(j);
+        setMessageTypeIntoJSONObject(ServerMessageType.error, j);
+        JsonUtil.setKeyValueStringsIntoJSONObject(PLAYERERROR, playerError.getMessage(), j);
+        return j.toString();
     }
 
     @Override
@@ -183,10 +260,20 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
             try {
                 j = new JSONObject(reply);
                 String playerErrorMessage = j.getString(PLAYERERROR);
-                if(playerErrorMessage != null) {
+                if (playerErrorMessage != null) {
                     throw new PlayerError(playerErrorMessage);
                 }
             } catch (JSONException e) {
+            }
+        }
+    }
+
+    protected void setReplyFlag(JSONObject j) {
+        if (j != null) {
+            try {
+                j.put(REPLY, "true");
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -195,16 +282,6 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
         if (gameMessage != null && j != null) {
             try {
                 j.put(GAMEMESSAGE, gameMessage);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    protected void setKeyValueStringsIntoJSONObject(String key, String value, JSONObject j) {
-        if (key != null && j != null) {
-            try {
-                j.put(key, value);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

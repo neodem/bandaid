@@ -10,48 +10,56 @@ import java.util.Map;
  */
 public interface ServerMessageTranslator {
 
-
     ServerMessageType unmarshalServerMessageTypeFromMessage(String msg);
 
     // server messages
 
+    // connect
+    String marshalConnectRequest(String playerName);
+
+    String unmarshalConnectRequestName(String msg);
+
+    String marshalServerConnectOkReply();
+
+    // getServerStatus
+    String marshalGetServerStatusRequest();
+
+    String marshalGetServerStatusReply(String serverStatus);
+
+    String unmarshalGetServerStatusReply(String reply);
+
+    // getAvailableGames
+    String marshalGetAvailableGamesRequest();
+
+    String marshalGetAvailableGamesReply(Map<String, String> availableGames);
+
+    Map<String, String> unmarshalGetAvailableGamesReply(String reply);
+
+    //registerForGame
+    String marshalRegisterForGameRequest(String playerName, String gameId);
+
+    String unmarshalRegisterForGameRequestName(String msg);
+
+    String unmarshalRegisterForGameRequestGameId(String msg);
+
+
+    // --- mixed
+
     String marshalGameMessageExpectsReply(String gameMessage);
 
-    String marshalServerConnect(int networkId, String name);
-
-    String marshalServerGetAvailableGames();
-
-
-    String marshalAvailableGames(Map<String,String> availableGames);
-    Map<String, String> unmarshalAvailableGames(String reply);
-
-    String marshalRegisterForGameRequest(int networkId, String gameId);
-
     String marshalRegisterForGameReply(boolean result);
+
     boolean unmarshalServerReplyRegisterForGame(String reply);
-
-
-    String marshalServerRequestGetServerStatus();
-
-    String unmarshalServerReplyServerStatus(String reply);
 
     String marshalServerGameStatus(String gameId);
 
     String unmarshalServerReplyGameStatus(String reply);
 
-    String unmarshalGameId(String msg);
-
-    String unmarshalServerConnectName(String msg);
-
     String marshalPlayerError(PlayerError playerError);
-
-
 
     String marshalServerReplyBoolean(boolean result);
 
-    String marshalGameStatus(String gameStatus);
-
-    String marshalServerStatus(String serverStatus);
+    String marshalServerGameStatusReply(String gameStatus);
 
     void checkReplyForPlayerError(String reply) throws PlayerError;
 
@@ -62,4 +70,5 @@ public interface ServerMessageTranslator {
     String unmarshalGameMessage(String m);
 
 
+    String unmarshalServerGameStatusRequestGameId(String msg);
 }

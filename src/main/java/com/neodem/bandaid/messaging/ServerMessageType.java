@@ -23,5 +23,5 @@ public enum ServerMessageType {
 
     gameMessageNeedsReply,
 
-    unknown;
+    unknown, error;
 }
