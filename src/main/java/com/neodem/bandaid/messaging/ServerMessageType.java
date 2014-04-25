@@ -17,8 +17,6 @@ public enum ServerMessageType {
 
     serverStatus,
 
-    reply,
-
     gameMessage,
 
     gameMessageNeedsReply,
