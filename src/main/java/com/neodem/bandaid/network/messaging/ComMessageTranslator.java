@@ -1,4 +1,4 @@
-package com.neodem.bandaid.network;
+package com.neodem.bandaid.network.messaging;
 
 /**
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
@@ -16,6 +16,15 @@ public interface ComMessageTranslator {
      * @return a marshaled message
      */
     String makeMessage(int to, String payload);
+
+    /**
+     *
+     * @param payload the message
+     * @return a marshaled message
+     */
+    String makeBroadcastMessage(String payload);
+
+    boolean isBroadcastMessage(String payload);
 
     ///********
 

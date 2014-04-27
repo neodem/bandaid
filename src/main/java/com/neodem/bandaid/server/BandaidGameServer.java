@@ -1,5 +1,6 @@
 package com.neodem.bandaid.server;
 
+import com.neodem.bandaid.gamemasterstuff.PlayerCallback;
 import com.neodem.bandaid.gamemasterstuff.PlayerError;
 
 import java.util.Map;
@@ -15,9 +16,9 @@ public interface BandaidGameServer {
     /**
      * connect to the game server
      *
-     * @param playerName your name/identifier
+     * @param player
      */
-    void connect(String playerName) throws PlayerError;
+    void connect(PlayerCallback player) throws PlayerError;
 
     /**
      * ask the server for a list of available games
@@ -29,11 +30,11 @@ public interface BandaidGameServer {
     /**
      * register for a game
      *
-     * @param playerName
+     * @param player
      * @param gameId     the game you want to register for
      * @return if you were registered or not
      */
-    boolean registerForGame(String playerName, String gameId) throws PlayerError;
+    boolean registerForGame(PlayerCallback player, String gameId) throws PlayerError;
 
     /**
      * get the status of all running games

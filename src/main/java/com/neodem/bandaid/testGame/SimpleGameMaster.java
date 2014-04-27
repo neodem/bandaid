@@ -1,6 +1,7 @@
 package com.neodem.bandaid.testGame;
 
-import com.neodem.bandaid.gamemaster.BaseGameMaster;
+import com.neodem.bandaid.gamemasterstuff.BaseGameMaster;
+import com.neodem.bandaid.gamemasterstuff.PlayerCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +40,7 @@ public class SimpleGameMaster extends BaseGameMaster {
     }
 
     @Override
-    public boolean registerPlayer(String playerName) {
+    public boolean registerPlayer(PlayerCallback player) {
         ready = true;
         return true;
     }

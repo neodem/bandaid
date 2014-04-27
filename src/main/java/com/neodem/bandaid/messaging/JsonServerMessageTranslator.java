@@ -20,6 +20,7 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     private static final String AVAILABLEGAMEMAP = "AvailableGames";
     private static final String PLAYERERROR = "PlayerError";
     private static final String REPLY = "isReply";
+    private static final String CLIENTTYPE = "ClientType";
 
     @Override
     public ServerMessageType unmarshalServerMessageTypeFromMessage(String m) {
@@ -42,6 +43,41 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     @Override
     public String marshalGameMessage(String gameMessage) {
         JSONObject j = new JSONObject();
+        setMessageTypeIntoJSONObject(ServerMessageType.gameMessage, j);
+        setGameMessageIntoJSONObject(gameMessage, j);
+        return j.toString();
+    }
+
+    @Override
+    public String marshalHello(NetworkEntityType clientType, String identifier) {
+        JSONObject j = new JSONObject();
+        setMessageTypeIntoJSONObject(ServerMessageType.hello, j);
+        JsonUtil.setStringIntoJsonObject(CLIENTTYPE, clientType.name(), j);
+        JsonUtil.setStringIntoJsonObject(PLAYERNAME, identifier, j);
+        return j.toString();
+    }
+
+    @Override
+    public NetworkEntityType unmarshalNetworkEntityType(String m) {
+        NetworkEntityType result = NetworkEntityType.unknown;
+
+        if (m != null) {
+            try {
+                JSONObject j = new JSONObject(m);
+                String type = j.getString(CLIENTTYPE);
+                result = NetworkEntityType.valueOf(type);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public String marshalGameMessageReply(String gameMessage) {
+        JSONObject j = new JSONObject();
+        setReplyFlag(j);
         setMessageTypeIntoJSONObject(ServerMessageType.gameMessage, j);
         setGameMessageIntoJSONObject(gameMessage, j);
         return j.toString();
@@ -73,34 +109,18 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String marshalConnectRequest(String playerName) {
+    public String marshalConnectRequest() {
         JSONObject j = new JSONObject();
-        setMessageTypeIntoJSONObject(ServerMessageType.serverConnect, j);
-        JsonUtil.setGenericStringIntoJSONObject(playerName, j);
+        setMessageTypeIntoJSONObject(ServerMessageType.connect, j);
         return j.toString();
     }
 
-    @Override
-    public String unmarshalConnectRequestName(String m) {
-        String result = null;
-
-        if (m != null) {
-            try {
-                JSONObject j = new JSONObject(m);
-                result = JsonUtil.getStringFromJsonObject(j);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
-    }
 
     @Override
     public String marshalServerConnectOkReply() {
         JSONObject j = new JSONObject();
         setReplyFlag(j);
-        setMessageTypeIntoJSONObject(ServerMessageType.serverConnect, j);
+        setMessageTypeIntoJSONObject(ServerMessageType.connect, j);
         JsonUtil.setGenericStringIntoJSONObject("OK", j);
         return j.toString();
     }
@@ -146,17 +166,32 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String marshalRegisterForGameRequest(String playerName, String gameId) {
+    public String marshalGetPlayerNameRequest() {
         JSONObject j = new JSONObject();
-        setMessageTypeIntoJSONObject(ServerMessageType.registerForGame, j);
-        JsonUtil.setStringIntoJsonObject(PLAYERNAME, playerName, j);
-        JsonUtil.setStringIntoJsonObject(GAMEID, gameId, j);
+        setMessageTypeIntoJSONObject(ServerMessageType.getPlayerName, j);
         return j.toString();
     }
 
     @Override
-    public String unmarshalRegisterForGameRequestName(String m) {
-        return JsonUtil.getStringFromJsonMessage(PLAYERNAME, m);
+    public String marshalGetPlayerNameReply(String playerName) {
+        JSONObject j = new JSONObject();
+        setReplyFlag(j);
+        setMessageTypeIntoJSONObject(ServerMessageType.getPlayerName, j);
+        JsonUtil.setStringIntoJsonObject(PLAYERNAME, playerName, j);
+        return j.toString();
+    }
+
+    @Override
+    public String unmarshalGetPlayerNameReply(String msg) {
+        return JsonUtil.getStringFromJsonMessage(PLAYERNAME, msg);
+    }
+
+    @Override
+    public String marshalRegisterForGameRequest(String gameId) {
+        JSONObject j = new JSONObject();
+        setMessageTypeIntoJSONObject(ServerMessageType.registerForGame, j);
+        JsonUtil.setStringIntoJsonObject(GAMEID, gameId, j);
+        return j.toString();
     }
 
     @Override

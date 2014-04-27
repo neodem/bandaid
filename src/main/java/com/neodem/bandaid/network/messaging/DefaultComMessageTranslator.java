@@ -1,5 +1,6 @@
-package com.neodem.bandaid.network;
+package com.neodem.bandaid.network.messaging;
 
+import com.neodem.bandaid.network.ComServer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,8 +14,7 @@ public class DefaultComMessageTranslator implements ComMessageTranslator {
     private static final String FROM = "from";
     private static final String PAYLOAD = "p";
 
-    DefaultComMessageTranslator() {
-    }
+    private static final int BROADCASTID = -999;
 
     @Override
     public int getDest(String m) {
@@ -73,6 +73,17 @@ public class DefaultComMessageTranslator implements ComMessageTranslator {
         setDest(to, j);
         setPayload(payload, j);
         return j.toString();
+    }
+
+    @Override
+    public String makeBroadcastMessage(String payload) {
+        return makeMessage(BROADCASTID, payload);
+    }
+
+    @Override
+    public boolean isBroadcastMessage(String payload) {
+        int to = getDest(payload);
+        return to == BROADCASTID;
     }
 
     @Override

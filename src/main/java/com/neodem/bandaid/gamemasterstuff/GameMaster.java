@@ -36,7 +36,7 @@ public interface GameMaster {
      * @param playerName the name of the player
      * @return an interface the player can use to interact with the game
      */
-    boolean registerPlayer(String playerName);
+    boolean registerPlayer(PlayerCallback playerName);
 
     /**
      * @return

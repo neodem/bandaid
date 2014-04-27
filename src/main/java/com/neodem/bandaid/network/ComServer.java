@@ -1,13 +1,11 @@
 package com.neodem.bandaid.network;
 
+import com.neodem.bandaid.network.messaging.ComMessageTranslator;
+import com.neodem.bandaid.network.messaging.DefaultComMessageTranslator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -66,10 +64,8 @@ public class ComServer implements Runnable {
         }
 
         public void openCommunication() throws IOException {
-            streamIn = new DataInputStream(new
-                    BufferedInputStream(socket.getInputStream()));
-            streamOut = new DataOutputStream(new
-                    BufferedOutputStream(socket.getOutputStream()));
+            streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            streamOut = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
         }
 
         public void closeCommunication() throws IOException {
@@ -117,16 +113,28 @@ public class ComServer implements Runnable {
     }
 
     public synchronized void handle(int from, String message) {
-        int to = mt.getDest(message);
         String payload = mt.getPayload(message);
-        log.debug("relaying message from {} to {} : {}", from, to, payload);
+        int to = mt.getDest(message);
 
         // add the from
         String frommedMessage = mt.addFrom(from, message);
 
-        // send the message
+        if (mt.isBroadcastMessage(message)) {
+            log.debug("broadcasting message from {} to all other clients : {}", from, to, payload);
+
+            for(int id : clientMap.keySet()) {
+                if(id == from) continue;
+                sendMessage(id, frommedMessage);
+            }
+        } else {
+            log.debug("relaying message from {} to {} : {}", from, to, payload);
+            sendMessage(to, frommedMessage);
+        }
+    }
+
+    private void sendMessage(int to, String message) {
         ClientConnector c = clientMap.get(to);
-        c.send(frommedMessage);
+        c.send(message);
     }
 
     public synchronized void removeClientConnector(int id) {
@@ -142,10 +150,9 @@ public class ComServer implements Runnable {
     }
 
     private void addClientThread(Socket socket) {
-        if (clientCount < 5) {
+        if (clientCount < 20) {
             log.info("Client accepted: " + socket);
 
-            //todo make this dynamic
             int dest = getNextDest();
 
             // make thread

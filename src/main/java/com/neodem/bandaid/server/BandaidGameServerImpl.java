@@ -2,6 +2,7 @@ package com.neodem.bandaid.server;
 
 import com.google.common.collect.Maps;
 import com.neodem.bandaid.gamemasterstuff.GameMaster;
+import com.neodem.bandaid.gamemasterstuff.PlayerCallback;
 import com.neodem.bandaid.gamemasterstuff.PlayerError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +27,7 @@ public class BandaidGameServerImpl implements BandaidGameServer {
     /**
      * (netId, name)
      */
-    private Collection<String> connectedPlayers = new HashSet<>();
+    private Collection<PlayerCallback> connectedPlayers = new HashSet<>();
     /**
      * (playerName, gameId)
      */
@@ -64,13 +65,13 @@ public class BandaidGameServerImpl implements BandaidGameServer {
     }
 
     @Override
-    public void connect(String playerName) throws PlayerError {
-        if (connectedPlayers.contains(playerName)) {
-            String msg = "player already connected (try another name) : " + playerName;
+    public void connect(PlayerCallback player) throws PlayerError {
+        if (connectedPlayers.contains(player)) {
+            String msg = "player already connected (try another name) : " + player.getPlayerName();
             throw new PlayerError(msg);
         }
 
-        connectedPlayers.add(playerName);
+        connectedPlayers.add(player);
     }
 
     @Override
@@ -84,7 +85,11 @@ public class BandaidGameServerImpl implements BandaidGameServer {
     }
 
     @Override
-    public boolean registerForGame(String playerName, String gameId) throws PlayerError {
+    public boolean registerForGame(PlayerCallback player, String gameId) throws PlayerError {
+        if (player == null) return false;
+        if (gameId == null || "".equals(gameId)) return false;
+
+        String playerName = player.getPlayerName();
 
         if (playersInGames.containsKey(playerName)) {
             String msg = "player already in game : " + playersInGames.get(playerName);
@@ -95,7 +100,7 @@ public class BandaidGameServerImpl implements BandaidGameServer {
             if (gameMasters.containsKey(gameId)) {
                 GameMaster gm = gameMasters.get(gameId);
 
-                boolean result = gm.registerPlayer(playerName);
+                boolean result = gm.registerPlayer(player);
                 if (result == true) {
                     playersInGames.put(playerName, gameId);
                 }

@@ -1,10 +1,11 @@
 package com.neodem.bandaid.proxy;
 
+import com.neodem.bandaid.gamemasterstuff.PlayerCallback;
 import com.neodem.bandaid.gamemasterstuff.PlayerError;
-import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
+import com.neodem.bandaid.messaging.NetworkEntityType;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageType;
-import com.neodem.bandaid.network.ComBaseClient;
+import com.neodem.bandaid.network.ComClient;
 import com.neodem.bandaid.network.ComServer;
 import com.neodem.bandaid.server.BandaidGameServer;
 import org.apache.logging.log4j.LogManager;
@@ -14,25 +15,31 @@ import java.util.Map;
 
 /**
  * Use this to communicate with the BandaidGameServer over a network. Simply call connect() to
- * establish the connection and call the methods as you normally would.
+ * establish the connection and call the methods as you normally would. This sits client side
  * <p/>
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 3/27/14
  */
-public abstract class BandaidGameServerNetworkedClientProxy implements BandaidGameServer {
+public abstract class PlayerCallbackNetworkTransport implements BandaidGameServer {
 
-    private static final Logger log = LogManager.getLogger(BandaidGameServerNetworkedClientProxy.class.getName());
+    private static final Logger log = LogManager.getLogger(PlayerCallbackNetworkTransport.class.getName());
     private final ServerMessageTranslator serverMessageTranslator;
     private final MessageHandler messageHandler = new MessageHandler("localhost", 6969);
+    private final PlayerCallback player;
     private Thread messageHandlerThread = null;
 
-    private class MessageHandler extends ComBaseClient implements Runnable {
+    public PlayerCallbackNetworkTransport(PlayerCallback player, ServerMessageTranslator serverMessageTranslator) {
+        this.player = player;
+        this.serverMessageTranslator = serverMessageTranslator;
+    }
+
+    private class MessageHandler extends ComClient implements Runnable {
 
         private String mostRecentMessage = null;
 
         @Override
         protected String getClientName() {
-            return "BandaidGameServerNetworkedClientProxy";
+            return "PlayerCallbackNetworkTransport";
         }
 
         public MessageHandler(String host, int port) {
@@ -53,7 +60,8 @@ public abstract class BandaidGameServerNetworkedClientProxy implements BandaidGa
                     handleGameMessage(from, gameMessage);
                 } else {
                     String reply = handleGameMessageWithReply(from, gameMessage);
-                    // todo marshal and sent to game server?
+                    String replyMessage = serverMessageTranslator.marshalGameMessageReply(reply);
+                    send(from, replyMessage);
                 }
             }
 
@@ -67,6 +75,8 @@ public abstract class BandaidGameServerNetworkedClientProxy implements BandaidGa
 
         public void run() {
             init();
+            broadcast(serverMessageTranslator.marshalHello(NetworkEntityType.playerCallbackNetworkTransport, player.getPlayerName()));
+            log.info("Network Link Established");
         }
     }
 
@@ -74,13 +84,9 @@ public abstract class BandaidGameServerNetworkedClientProxy implements BandaidGa
 
     protected abstract String handleGameMessageWithReply(int from, String gameMessage);
 
-    public BandaidGameServerNetworkedClientProxy() {
-        this.serverMessageTranslator = new JsonServerMessageTranslator();
-    }
-
     public void init() {
         messageHandlerThread = new Thread(messageHandler);
-        messageHandlerThread.setName("BandaidGameServerNetworkedClientProxy-MessageHandler");
+        messageHandlerThread.setName("PlayerCallbackNetworkTransport-MessageHandler");
         messageHandlerThread.start();
     }
 
@@ -99,8 +105,8 @@ public abstract class BandaidGameServerNetworkedClientProxy implements BandaidGa
     }
 
     @Override
-    public void connect(String playerName) throws PlayerError {
-        String m = serverMessageTranslator.marshalConnectRequest(playerName);
+    public void connect(PlayerCallback player) throws PlayerError {
+        String m = serverMessageTranslator.marshalConnectRequest();
         String reply = sendAndExpectReply(ComServer.Server, m);
         serverMessageTranslator.checkReplyForPlayerError(reply);
     }
@@ -113,8 +119,8 @@ public abstract class BandaidGameServerNetworkedClientProxy implements BandaidGa
     }
 
     @Override
-    public boolean registerForGame(String playerName, String gameId) throws PlayerError {
-        String m = serverMessageTranslator.marshalRegisterForGameRequest(playerName, gameId);
+    public boolean registerForGame(PlayerCallback player, String gameId) throws PlayerError {
+        String m = serverMessageTranslator.marshalRegisterForGameRequest(gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
         return serverMessageTranslator.unmarshalRegisterForGameReply(reply);
     }

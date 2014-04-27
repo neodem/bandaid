@@ -1,56 +1,71 @@
 package com.neodem.bandaid.proxy;
 
+import com.neodem.bandaid.gamemasterstuff.PlayerCallback;
+import com.neodem.bandaid.gamemasterstuff.PlayerCallbackProxyFactory;
 import com.neodem.bandaid.gamemasterstuff.PlayerError;
 import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
+import com.neodem.bandaid.messaging.NetworkEntityType;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageType;
-import com.neodem.bandaid.network.ComBaseClient;
+import com.neodem.bandaid.network.ComClient;
 import com.neodem.bandaid.server.BandaidGameServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * This is the network enabled proxy. It sits server side and communicates with clients
- * over the network and proxies the BandaidGameServer
+ * over the network and proxies the BandaidGameServer. There should be only one running at once.
  * <p/>
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 3/27/14
  */
-public class BandaidGameServerNetworkProxy extends ComBaseClient {
+public final class BandaidGameServerNetworkTransport extends ComClient {
 
-    private static final Logger log = LogManager.getLogger(BandaidGameServerNetworkProxy.class.getName());
+    private static final Logger log = LogManager.getLogger(BandaidGameServerNetworkTransport.class.getName());
     private final ServerMessageTranslator serverMessageTranslator;
+
     private BandaidGameServer bandaidGameServer;
 
-    public BandaidGameServerNetworkProxy() {
+    private PlayerCallbackProxyFactory playerCallbackProxyFactory;
+
+    private Map<Integer, PlayerCallback> players = new HashMap<>();
+
+    public BandaidGameServerNetworkTransport() {
         super("localhost", 6969);
         this.serverMessageTranslator = new JsonServerMessageTranslator();
     }
 
     @Override
     protected String getClientName() {
-        return "BandaidGameServerNetworkProxy";
+        return "BandaidGameServerNetworkTransport";
     }
 
     @Override
     public void handleMessage(int from, String msg) {
         log.trace("Server : handle message : " + msg);
-        ServerMessageType type = serverMessageTranslator.unmarshalServerMessageTypeFromMessage(msg);
+        ServerMessageType serverMessageType = serverMessageTranslator.unmarshalServerMessageTypeFromMessage(msg);
 
         String replyMessage = null;
 
         String gameId;
 
-        String playerName;
-
-        switch (type) {
-            case serverConnect:
-                playerName = serverMessageTranslator.unmarshalConnectRequestName(msg);
-                replyMessage = serverMessageTranslator.marshalServerConnectOkReply();
+        switch (serverMessageType) {
+            case hello:
+                if(!players.containsKey(from)) {
+                    NetworkEntityType networkEntityType = serverMessageTranslator.unmarshalNetworkEntityType(msg);
+                    if(networkEntityType == NetworkEntityType.playerCallbackNetworkTransport) {
+                        // a new client side transport is up. We need a server side partner for it
+                        PlayerCallback pc = playerCallbackProxyFactory.makeNewProxy(from);
+                        players.put(from, pc);
+                    }
+                }
+                break;
+            case connect:
                 try {
-                    bandaidGameServer.connect(playerName);
+                    bandaidGameServer.connect(players.get(from));
                 } catch (PlayerError playerError) {
                     replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
                 }
@@ -60,10 +75,9 @@ public class BandaidGameServerNetworkProxy extends ComBaseClient {
                 replyMessage = serverMessageTranslator.marshalGetAvailableGamesReply(availableGames);
                 break;
             case registerForGame:
-                playerName = serverMessageTranslator.unmarshalRegisterForGameRequestName(msg);
                 gameId = serverMessageTranslator.unmarshalRegisterForGameRequestGameId(msg);
                 try {
-                    boolean result = bandaidGameServer.registerForGame(playerName, gameId);
+                    boolean result = bandaidGameServer.registerForGame(players.get(from), gameId);
                     replyMessage = serverMessageTranslator.marshalRegisterForGameReply(result);
                 } catch (PlayerError playerError) {
                     replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
@@ -78,16 +92,18 @@ public class BandaidGameServerNetworkProxy extends ComBaseClient {
                 String serverStatus = bandaidGameServer.getServerStatus();
                 replyMessage = serverMessageTranslator.marshalGetServerStatusReply(serverStatus);
                 break;
-        }
-        ;
+        };
 
         if (replyMessage != null) {
             send(from, replyMessage);
         }
-
     }
 
     public void setBandaidGameServer(BandaidGameServer bandaidGameServer) {
         this.bandaidGameServer = bandaidGameServer;
+    }
+
+    public void setPlayerCallbackProxyFactory(PlayerCallbackProxyFactory playerCallbackProxyFactory) {
+        this.playerCallbackProxyFactory = playerCallbackProxyFactory;
     }
 }

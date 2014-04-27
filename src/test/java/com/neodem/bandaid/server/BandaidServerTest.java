@@ -2,8 +2,8 @@ package com.neodem.bandaid.server;
 
 import com.neodem.bandaid.gamemaster.PlayerError;
 import com.neodem.bandaid.network.ComServer;
-import com.neodem.bandaid.proxy.BandaidGameServerNetworkProxy;
-import com.neodem.bandaid.proxy.BandaidGameServerNetworkedClientProxy;
+import com.neodem.bandaid.proxy.BandaidGameServerNetworkTransport;
+import com.neodem.bandaid.proxy.PlayerCallbackNetworkTransport;
 import com.neodem.bandaid.testGame.SimpleGameMaster;
 import org.junit.After;
 import org.junit.Before;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class BandaidServerTest {
 
 
-    private BandaidGameServerNetworkedClientProxy clientProxy;
+    private PlayerCallbackNetworkTransport clientProxy;
     private BandaidServer server;
 
     @Before
@@ -27,15 +27,15 @@ public class BandaidServerTest {
         BandaidGameServerImpl bandaidGameServer = new BandaidGameServerImpl();
         bandaidGameServer.addGameMaster("simpleGameMaster", new SimpleGameMaster());
 
-        BandaidGameServerNetworkProxy bandaidGameServerNetworkProxy = new BandaidGameServerNetworkProxy();
-        bandaidGameServerNetworkProxy.setBandaidGameServer(bandaidGameServer);
+        BandaidGameServerNetworkTransport bandaidGameServerNetworkTransport = new BandaidGameServerNetworkTransport();
+        bandaidGameServerNetworkTransport.setBandaidGameServer(bandaidGameServer);
 
         server = new BandaidServer();
-        server.setBandaidGameServerNetworkProxy(bandaidGameServerNetworkProxy);
+        server.setBandaidGameServerNetworkTransport(bandaidGameServerNetworkTransport);
         server.setComServer(new ComServer());
         server.start();
 
-        clientProxy = new BandaidGameServerNetworkedClientProxy();
+        clientProxy = new PlayerCallbackNetworkTransport();
         clientProxy.init();
     }
 

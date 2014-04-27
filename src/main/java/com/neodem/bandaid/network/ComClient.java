@@ -1,5 +1,7 @@
 package com.neodem.bandaid.network;
 
+import com.neodem.bandaid.network.messaging.ComMessageTranslator;
+import com.neodem.bandaid.network.messaging.DefaultComMessageTranslator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,9 +11,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public abstract class ComBaseClient {
+public abstract class ComClient {
 
-    private static final Logger log = LogManager.getLogger(ComBaseClient.class.getName());
+    private static final Logger log = LogManager.getLogger(ComClient.class.getName());
     private final String hostName;
     private final int port;
     private final DataInputStream console = null;
@@ -56,7 +58,7 @@ public abstract class ComBaseClient {
         }
     }
 
-    public ComBaseClient(String host, int port) {
+    public ComClient(String host, int port) {
         this.hostName = host;
         this.port = port;
     }
@@ -97,6 +99,27 @@ public abstract class ComBaseClient {
 
         log.trace("{} : Send to ComServer to route to {} : {}", getClientName(), destination, message);
 
+        // send to ComServer to handle and pass on to the correct client
+        try {
+            streamOut.writeUTF(m);
+            streamOut.flush();
+        } catch (IOException ioe) {
+            log.error("Sending error: " + ioe.getMessage());
+            stopClientThread();
+        }
+    }
+
+    /**
+     * send a message to all other users asynchronously
+     *
+     * @param message     the message to send
+     */
+    public void broadcast(String message) {
+        String m = mt.makeBroadcastMessage(message);
+
+        log.trace("{} : Send to ComServer to broadcast : {}", getClientName(), message);
+
+        // send to ComServer to handle and pass on to the all other clients
         try {
             streamOut.writeUTF(m);
             streamOut.flush();

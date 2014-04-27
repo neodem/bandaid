@@ -15,9 +15,7 @@ public interface ServerMessageTranslator {
     // server messages
 
     // connect
-    String marshalConnectRequest(String playerName);
-
-    String unmarshalConnectRequestName(String serverMessage);
+    String marshalConnectRequest();
 
     String marshalServerConnectOkReply();
 
@@ -36,9 +34,7 @@ public interface ServerMessageTranslator {
     Map<String, String> unmarshalGetAvailableGamesReply(String serverMessage);
 
     //registerForGame
-    String marshalRegisterForGameRequest(String playerName, String gameId);
-
-    String unmarshalRegisterForGameRequestName(String serverMessage);
+    String marshalRegisterForGameRequest(String gameId);
 
     String unmarshalRegisterForGameRequestGameId(String serverMessage);
 
@@ -62,6 +58,20 @@ public interface ServerMessageTranslator {
 
     boolean isReply(String serverMessage);
 
+    String marshalGetPlayerNameRequest();
+
+    public String marshalGetPlayerNameReply(String playerName);
+    String unmarshalGetPlayerNameReply(String msg);
+    /**
+     * make a special message to alert to all connected clients that we are online and ready
+     *
+     * @param clientType
+     * @param identifier
+     * @return
+     */
+    String marshalHello(NetworkEntityType clientType, String identifier);
+    NetworkEntityType unmarshalNetworkEntityType(String msg);
+
     /// game messages
 
     String marshalGameMessage(String gameMessage);
@@ -69,5 +79,9 @@ public interface ServerMessageTranslator {
     String unmarshalGameMessage(String gameMessage);
 
     String marshalGameMessageExpectsReply(String gameMessage);
+
+    String marshalGameMessageReply(String gameMessage);
+
+
 
 }
