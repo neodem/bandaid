@@ -1,6 +1,6 @@
 package com.neodem.bandaid.messaging;
 
-import com.neodem.bandaid.gamemaster.PlayerError;
+import com.neodem.bandaid.gamemasterstuff.PlayerError;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -273,6 +273,22 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    @Override
+    public boolean isReply(String m) {
+        if (m != null) {
+            try {
+                JSONObject j = new JSONObject(m);
+                String replyFlag = j.getString(REPLY);
+                if ("true".equals(replyFlag)) {
+                    return true;
+                }
+            } catch (JSONException e) {
+            }
+        }
+        return false;
     }
 
     protected void setGameMessageIntoJSONObject(String gameMessage, JSONObject j) {

@@ -1,6 +1,6 @@
 package com.neodem.bandaid.proxy;
 
-import com.neodem.bandaid.gamemaster.PlayerError;
+import com.neodem.bandaid.gamemasterstuff.PlayerError;
 import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageType;
@@ -51,7 +51,7 @@ public class BandaidGameServerNetworkProxy extends ComBaseClient {
                 replyMessage = serverMessageTranslator.marshalServerConnectOkReply();
                 try {
                     bandaidGameServer.connect(playerName);
-                } catch (com.neodem.bandaid.gamemaster.PlayerError playerError) {
+                } catch (PlayerError playerError) {
                     replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
                 }
                 break;

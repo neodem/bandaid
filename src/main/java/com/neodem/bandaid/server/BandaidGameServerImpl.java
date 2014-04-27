@@ -1,8 +1,8 @@
 package com.neodem.bandaid.server;
 
 import com.google.common.collect.Maps;
-import com.neodem.bandaid.gamemaster.GameMaster;
-import com.neodem.bandaid.gamemaster.PlayerError;
+import com.neodem.bandaid.gamemasterstuff.GameMaster;
+import com.neodem.bandaid.gamemasterstuff.PlayerError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

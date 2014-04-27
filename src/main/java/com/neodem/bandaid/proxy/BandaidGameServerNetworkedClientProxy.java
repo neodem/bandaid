@@ -1,8 +1,9 @@
 package com.neodem.bandaid.proxy;
 
-import com.neodem.bandaid.gamemaster.PlayerError;
+import com.neodem.bandaid.gamemasterstuff.PlayerError;
 import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
+import com.neodem.bandaid.messaging.ServerMessageType;
 import com.neodem.bandaid.network.ComBaseClient;
 import com.neodem.bandaid.network.ComServer;
 import com.neodem.bandaid.server.BandaidGameServer;
@@ -18,7 +19,7 @@ import java.util.Map;
  * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
  * Created Date: 3/27/14
  */
-public class BandaidGameServerNetworkedClientProxy implements BandaidGameServer {
+public abstract class BandaidGameServerNetworkedClientProxy implements BandaidGameServer {
 
     private static final Logger log = LogManager.getLogger(BandaidGameServerNetworkedClientProxy.class.getName());
     private final ServerMessageTranslator serverMessageTranslator;
@@ -44,10 +45,23 @@ public class BandaidGameServerNetworkedClientProxy implements BandaidGameServer 
 
         @Override
         protected void handleMessage(int from, String msg) {
-            // todo maybe a check to see if it's a reply?
-            synchronized (this) {
-                mostRecentMessage = msg;
-                notify();
+            ServerMessageType type = serverMessageTranslator.unmarshalServerMessageTypeFromMessage(msg);
+            if (type == ServerMessageType.gameMessage || type == ServerMessageType.gameMessageNeedsReply) {
+                String gameMessage = serverMessageTranslator.unmarshalGameMessage(msg);
+
+                if (type == ServerMessageType.gameMessage) {
+                    handleGameMessage(from, gameMessage);
+                } else {
+                    String reply = handleGameMessageWithReply(from, gameMessage);
+                    // todo marshal and sent to game server?
+                }
+            }
+
+            if (serverMessageTranslator.isReply(msg)) {
+                synchronized (this) {
+                    mostRecentMessage = msg;
+                    notify();
+                }
             }
         }
 
@@ -55,6 +69,10 @@ public class BandaidGameServerNetworkedClientProxy implements BandaidGameServer 
             init();
         }
     }
+
+    protected abstract void handleGameMessage(int from, String gameMessage);
+
+    protected abstract String handleGameMessageWithReply(int from, String gameMessage);
 
     public BandaidGameServerNetworkedClientProxy() {
         this.serverMessageTranslator = new JsonServerMessageTranslator();

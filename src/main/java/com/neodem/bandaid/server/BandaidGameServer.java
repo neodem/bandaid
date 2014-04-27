@@ -1,6 +1,6 @@
 package com.neodem.bandaid.server;
 
-import com.neodem.bandaid.gamemaster.PlayerError;
+import com.neodem.bandaid.gamemasterstuff.PlayerError;
 
 import java.util.Map;
 

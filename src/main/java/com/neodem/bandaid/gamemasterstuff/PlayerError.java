@@ -1,4 +1,4 @@
-package com.neodem.bandaid.gamemaster;
+package com.neodem.bandaid.gamemasterstuff;
 
 /**
  * Author: vfumo
