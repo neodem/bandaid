@@ -61,7 +61,8 @@ public interface ServerMessageTranslator {
     String marshalGetPlayerNameRequest();
 
     public String marshalGetPlayerNameReply(String playerName);
-    String unmarshalGetPlayerNameReply(String msg);
+
+    String unmarshalPlayerName(String msg);
     /**
      * make a special message to alert to all connected clients that we are online and ready
      *

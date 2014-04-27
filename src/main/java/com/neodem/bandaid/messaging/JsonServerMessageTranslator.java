@@ -182,7 +182,7 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String unmarshalGetPlayerNameReply(String msg) {
+    public String unmarshalPlayerName(String msg) {
         return JsonUtil.getStringFromJsonMessage(PLAYERNAME, msg);
     }
 

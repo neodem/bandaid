@@ -24,13 +24,15 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
 
     private static final Logger log = LogManager.getLogger(PlayerCallbackNetworkTransport.class.getName());
     private final ServerMessageTranslator serverMessageTranslator;
-    private final MessageHandler messageHandler = new MessageHandler("localhost", 6969);
+    private final MessageHandler messageHandler;
     private final PlayerCallback player;
     private Thread messageHandlerThread = null;
+    protected int serverSideId;
 
-    public PlayerCallbackNetworkTransport(PlayerCallback player, ServerMessageTranslator serverMessageTranslator) {
+    public PlayerCallbackNetworkTransport(String hostname, PlayerCallback player, ServerMessageTranslator serverMessageTranslator) {
         this.player = player;
         this.serverMessageTranslator = serverMessageTranslator;
+        messageHandler = new MessageHandler(hostname, 6969);
     }
 
     private class MessageHandler extends ComClient implements Runnable {
@@ -53,6 +55,17 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
         @Override
         protected void handleMessage(int from, String msg) {
             ServerMessageType type = serverMessageTranslator.unmarshalServerMessageTypeFromMessage(msg);
+
+            if(type == ServerMessageType.hello) {
+                NetworkEntityType networkEntityType = serverMessageTranslator.unmarshalNetworkEntityType(msg);
+                if(networkEntityType == NetworkEntityType.playerCallbackProxy) {
+                   String playerName = serverMessageTranslator.unmarshalPlayerName(msg);
+                    if(player.getPlayerName().equals(playerName)) {
+                        serverSideId = from;
+                    }
+                }
+            }
+
             if (type == ServerMessageType.gameMessage || type == ServerMessageType.gameMessageNeedsReply) {
                 String gameMessage = serverMessageTranslator.unmarshalGameMessage(msg);
 
