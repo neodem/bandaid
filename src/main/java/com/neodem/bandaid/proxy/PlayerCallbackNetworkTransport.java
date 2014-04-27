@@ -17,7 +17,7 @@ import java.util.Map;
  * Use this to communicate with the BandaidGameServer over a network. Simply call connect() to
  * establish the connection and call the methods as you normally would. This sits client side
  * <p/>
- * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
+ * Author: Vincent Fumo (vfumo)
  * Created Date: 3/27/14
  */
 public abstract class PlayerCallbackNetworkTransport implements BandaidGameServer {
@@ -61,9 +61,11 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
                 if(networkEntityType == NetworkEntityType.playerCallbackProxy) {
                    String playerName = serverMessageTranslator.unmarshalPlayerName(msg);
                     if(player.getPlayerName().equals(playerName)) {
+                        log.info("Processing Hello message from a PlayerCallbackProxy at networkId={} that matches our name.", from);
                         serverSideId = from;
                     }
                 }
+                return;
             }
 
             if (type == ServerMessageType.gameMessage || type == ServerMessageType.gameMessageNeedsReply) {
@@ -103,7 +105,7 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
         messageHandlerThread.start();
     }
 
-    private String sendAndExpectReply(int dest, String msg) {
+    protected String sendAndExpectReply(int dest, String msg) {
         messageHandler.send(dest, msg);
 
         synchronized (messageHandler) {

@@ -97,7 +97,7 @@ public abstract class ComClient {
     public void send(int destination, String message) {
         String m = mt.makeMessage(message, DefaultComMessageTranslator.UNKNOWN, destination);
 
-        log.trace("{} : Send to ComServer to route to {} : {}", getClientName(), destination, message);
+        log.trace("I am '{}' and I am sending '{}' to the ComServer to route to {}", getClientName(), message, destination);
 
         // send to ComServer to handle and pass on to the correct client
         try {

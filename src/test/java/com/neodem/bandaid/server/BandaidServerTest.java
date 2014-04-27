@@ -1,8 +1,8 @@
 package com.neodem.bandaid.server;
 
+import com.neodem.bandaid.gamemasterstuff.PlayerCallback;
 import com.neodem.bandaid.gamemasterstuff.PlayerCallbackProxyFactory;
 import com.neodem.bandaid.gamemasterstuff.PlayerError;
-import com.neodem.bandaid.gamemasterstuff.PlayerCallback;
 import com.neodem.bandaid.messaging.JsonServerMessageTranslator;
 import com.neodem.bandaid.messaging.ServerMessageTranslator;
 import com.neodem.bandaid.network.ComServer;
@@ -35,7 +35,7 @@ public class BandaidServerTest {
 
     @Before
     public void before() {
-    serverMessageTranslator = new JsonServerMessageTranslator();
+        serverMessageTranslator = new JsonServerMessageTranslator();
 
         BandaidGameServerImpl bandaidGameServer = new BandaidGameServerImpl();
         bandaidGameServer.addGameMaster("simpleGameMaster", new SimpleGameMaster());
@@ -61,7 +61,7 @@ public class BandaidServerTest {
             public String getPlayerName() {
                 return "name";
             }
-        } ;
+        };
 
         clientProxy = new SimpleGamePlayerCallbackNetworkTransport(playerCallback, serverMessageTranslator);
         clientProxy.init();

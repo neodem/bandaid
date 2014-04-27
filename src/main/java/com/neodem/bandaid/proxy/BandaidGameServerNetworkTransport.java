@@ -58,11 +58,18 @@ public final class BandaidGameServerNetworkTransport extends ComClient {
                     NetworkEntityType networkEntityType = serverMessageTranslator.unmarshalNetworkEntityType(msg);
                     if(networkEntityType == NetworkEntityType.playerCallbackNetworkTransport) {
 
+                        log.info("A PlayerCallbackNetworkTransport is up at networkId={} and needs a Server Side Proxy.", from);
+
                         String playerName = serverMessageTranslator.unmarshalPlayerName(msg);
 
                         // a new client side transport is up. We need a server side partner for it
+                        log.debug("Constructing a PlayerCallbackProxy");
                         PlayerCallbackProxy pc = playerCallbackProxyFactory.makeNewProxy(from, playerName);
+
+                        log.debug("Associating the PlayerCallbackFactory to networkId {}", from);
                         players.put(from, pc);
+
+                        log.debug("Initializing the PlayerCallbackFactory");
                         pc.init();
                     }
                 }
