@@ -6,16 +6,19 @@ package com.neodem.bandaid.network.messaging;
  */
 public interface ComMessageTranslator {
 
-    int getDest(String m);
-
+    int getTo(String m);
+    int getFrom(String netMessage);
     String getPayload(String m);
 
     /**
-     * @param to      the id we want to send to
+     *
+     *
      * @param payload the message
-     * @return a marshaled message
+     * @param from the id this is from
+     * @param to the id we want to send to
+     * @return
      */
-    String makeMessage(int to, String payload);
+    String makeMessage(String payload, int from, int to);
 
     /**
      *
@@ -28,8 +31,17 @@ public interface ComMessageTranslator {
 
     ///********
 
-    int getFrom(String netMessage);
+    /**
+     * change the from value
+     * @param msg
+     */
+    String updateFrom(int newFrom, String msg);
 
 
-    String addFrom(int from, String message);
+
+    /**
+     * change the to value
+     * @param msg
+     */
+    String updateTo(int newTo, String msg);
 }

@@ -114,17 +114,18 @@ public class ComServer implements Runnable {
 
     public synchronized void handle(int from, String message) {
         String payload = mt.getPayload(message);
-        int to = mt.getDest(message);
+        int to = mt.getTo(message);
 
         // add the from
-        String frommedMessage = mt.addFrom(from, message);
+        String frommedMessage = mt.updateFrom(from, message);
 
         if (mt.isBroadcastMessage(message)) {
-            log.debug("broadcasting message from {} to all other clients : {}", from, to, payload);
+            log.debug("broadcasting message from {} to all other clients : {}", from, payload);
 
-            for(int id : clientMap.keySet()) {
-                if(id == from) continue;
-                sendMessage(id, frommedMessage);
+            for (int id : clientMap.keySet()) {
+                if (id == from) continue;
+                String m = mt.updateTo(id, frommedMessage);
+                sendMessage(id, m);
             }
         } else {
             log.debug("relaying message from {} to {} : {}", from, to, payload);

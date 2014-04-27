@@ -10,21 +10,22 @@ import org.json.JSONObject;
  */
 public class DefaultComMessageTranslator implements ComMessageTranslator {
 
-    private static final String DEST = "to";
+    private static final String TO = "to";
     private static final String FROM = "from";
     private static final String PAYLOAD = "p";
 
-    private static final int BROADCASTID = -999;
+    private static final int BROADCAST = -999;
+    public static final int UNKNOWN = -9999;
 
     @Override
-    public int getDest(String m) {
+    public int getTo(String m) {
         JSONObject j;
         int result = ComServer.Unknown;
 
         if (m != null) {
             try {
                 j = new JSONObject(m);
-                result = j.getInt(DEST);
+                result = j.getInt(TO);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -68,47 +69,55 @@ public class DefaultComMessageTranslator implements ComMessageTranslator {
     }
 
     @Override
-    public String makeMessage(int to, String payload) {
+    public String makeMessage(String payload, int from, int to) {
         JSONObject j = new JSONObject();
         setDest(to, j);
+        setFrom(from, j);
         setPayload(payload, j);
         return j.toString();
     }
 
     @Override
     public String makeBroadcastMessage(String payload) {
-        return makeMessage(BROADCASTID, payload);
+        return makeMessage(payload, UNKNOWN, BROADCAST);
     }
 
     @Override
     public boolean isBroadcastMessage(String payload) {
-        int to = getDest(payload);
-        return to == BROADCASTID;
+        int to = getTo(payload);
+        return to == BROADCAST;
     }
 
     @Override
-    public String addFrom(int from, String m) {
-        JSONObject j;
-        String result = m;
+    public String updateFrom(int newFrom, String msg) {
+        String payload = getPayload(msg);
+        int to = getTo(msg);
 
-        if (m != null) {
+        return makeMessage(payload, newFrom, to);
+    }
+
+    @Override
+    public String updateTo(int newTo, String msg) {
+        String payload = getPayload(msg);
+        int from = getFrom(msg);
+
+        return makeMessage(payload, from, newTo);
+    }
+
+    protected void setFrom(int f, JSONObject j) {
+        if (j != null) {
             try {
-                j = new JSONObject(m);
-                j.put(FROM, from);
-                result = j.toString();
+                j.put(FROM, f);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
-        return result;
     }
-
 
     protected void setDest(int d, JSONObject j) {
         if (j != null) {
             try {
-                j.put(DEST, d);
+                j.put(TO, d);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
