@@ -118,6 +118,12 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
         return messageHandler.getMostRecentMessage();
     }
 
+    public void connect() throws PlayerError {
+        String m = serverMessageTranslator.marshalConnectRequest();
+        String reply = sendAndExpectReply(ComServer.Server, m);
+        serverMessageTranslator.checkReplyForPlayerError(reply);
+    }
+
     @Override
     public void connect(PlayerCallback player) throws PlayerError {
         String m = serverMessageTranslator.marshalConnectRequest();
@@ -130,6 +136,13 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
         String m = serverMessageTranslator.marshalGetAvailableGamesRequest();
         String reply = sendAndExpectReply(ComServer.Server, m);
         return serverMessageTranslator.unmarshalGetAvailableGamesReply(reply);
+    }
+
+    public boolean registerForGame(String gameId) throws PlayerError {
+        String m = serverMessageTranslator.marshalRegisterForGameRequest(gameId);
+        String reply = sendAndExpectReply(ComServer.Server, m);
+        serverMessageTranslator.checkReplyForPlayerError(reply);
+        return serverMessageTranslator.unmarshalRegisterForGameReply(reply);
     }
 
     @Override
