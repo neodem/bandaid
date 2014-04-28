@@ -41,5 +41,5 @@ public interface GameMaster {
     /**
      * @return
      */
-    String getGameStatus();
+    GameStatus getGameStatus();
 }
