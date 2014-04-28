@@ -141,7 +141,7 @@ public class BandaidGameServerImpl implements BandaidGameServer {
     public String getGameStatus(String gameId) {
         GameMaster gm = gameMasters.get(gameId);
         if (gm != null) {
-            return gm.getGameStatus();
+            return gm.getGameStatus().name();
         }
 
         return "This game is not registered";
