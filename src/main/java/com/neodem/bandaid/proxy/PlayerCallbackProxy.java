@@ -54,6 +54,12 @@ public abstract class PlayerCallbackProxy implements PlayerCallback {
         messageHandlerThread.setName("PlayerCallbackProxy-MessageHandler");
         messageHandlerThread.start();
 
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         log.debug("alerting our NetworkTransport compatriot at {} that we are here", clientNetworkId);
         messageHandler.send(clientNetworkId, serverMessageTranslator.marshalHello(NetworkEntityType.playerCallbackProxy, playerName));
     }

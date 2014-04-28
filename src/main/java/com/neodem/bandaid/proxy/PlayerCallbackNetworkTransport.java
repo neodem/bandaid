@@ -38,6 +38,12 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
         messageHandlerThread.setName("PlayerCallbackNetworkTransport-MessageHandler");
         messageHandlerThread.start();
 
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         messageHandler.send(ComServer.Server, serverMessageTranslator.marshalHello(NetworkEntityType.playerCallbackNetworkTransport, player.getPlayerName()));
     }
 
