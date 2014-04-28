@@ -1,6 +1,7 @@
 package com.neodem.bandaid.testGame;
 
 import com.neodem.bandaid.gamemasterstuff.BaseGameMaster;
+import com.neodem.bandaid.gamemasterstuff.GameStatus;
 import com.neodem.bandaid.gamemasterstuff.PlayerCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,8 +47,8 @@ public class SimpleGameMaster extends BaseGameMaster {
     }
 
     @Override
-    public String getGameStatus() {
-        return "Ready to Play";
+    public GameStatus getGameStatus() {
+        return GameStatus.Ready;
     }
 
 }
