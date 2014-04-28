@@ -33,6 +33,12 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
         this.player = player;
         this.serverMessageTranslator = serverMessageTranslator;
         messageHandler = new MessageHandler(hostname, 6969);
+
+        messageHandlerThread = new Thread(messageHandler);
+        messageHandlerThread.setName("PlayerCallbackNetworkTransport-MessageHandler");
+        messageHandlerThread.start();
+
+        messageHandler.send(-2, serverMessageTranslator.marshalHello(NetworkEntityType.playerCallbackNetworkTransport, player.getPlayerName()));
     }
 
     private class MessageHandler extends ComClient implements Runnable {
@@ -56,11 +62,11 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
         protected void handleMessage(int from, String msg) {
             ServerMessageType type = serverMessageTranslator.unmarshalServerMessageTypeFromMessage(msg);
 
-            if(type == ServerMessageType.hello) {
+            if (type == ServerMessageType.hello) {
                 NetworkEntityType networkEntityType = serverMessageTranslator.unmarshalNetworkEntityType(msg);
-                if(networkEntityType == NetworkEntityType.playerCallbackProxy) {
-                   String playerName = serverMessageTranslator.unmarshalPlayerName(msg);
-                    if(player.getPlayerName().equals(playerName)) {
+                if (networkEntityType == NetworkEntityType.playerCallbackProxy) {
+                    String playerName = serverMessageTranslator.unmarshalPlayerName(msg);
+                    if (player.getPlayerName().equals(playerName)) {
                         log.info("Processing Hello message from a PlayerCallbackProxy at networkId={} that matches our name.", from);
                         serverSideId = from;
                     }
@@ -90,7 +96,6 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
 
         public void run() {
             init();
-            broadcast(serverMessageTranslator.marshalHello(NetworkEntityType.playerCallbackNetworkTransport, player.getPlayerName()));
             log.info("Network Link Established");
         }
     }
@@ -100,9 +105,9 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
     protected abstract String handleGameMessageWithReply(int from, String gameMessage);
 
     public void init() {
-        messageHandlerThread = new Thread(messageHandler);
-        messageHandlerThread.setName("PlayerCallbackNetworkTransport-MessageHandler");
-        messageHandlerThread.start();
+//        messageHandlerThread = new Thread(messageHandler);
+//        messageHandlerThread.setName("PlayerCallbackNetworkTransport-MessageHandler");
+//        messageHandlerThread.start();
     }
 
     protected String sendAndExpectReply(int dest, String msg) {

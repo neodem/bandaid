@@ -28,6 +28,15 @@ public abstract class PlayerCallbackProxy implements PlayerCallback {
         this.serverMessageTranslator = serverMessageTranslator;
         this.clientNetworkId = clientNetworkId;
         this.playerName = playerName;
+
+        log.debug("firing off MessageHandler thread.");
+
+        messageHandlerThread = new Thread(messageHandler);
+        messageHandlerThread.setName("PlayerCallbackProxy-MessageHandler");
+        messageHandlerThread.start();
+
+        log.debug("alerting our NetworkTransport compatriot at {} that we are here", clientNetworkId);
+        messageHandler.send(clientNetworkId, serverMessageTranslator.marshalHello(NetworkEntityType.playerCallbackProxy, playerName));
     }
 
     private class MessageHandler extends ComClient implements Runnable {
@@ -60,15 +69,14 @@ public abstract class PlayerCallbackProxy implements PlayerCallback {
 
         public void run() {
             init();
-            broadcast(serverMessageTranslator.marshalHello(NetworkEntityType.playerCallbackProxy, playerName));
             log.info("Network Link Established");
         }
     }
 
     public void init() {
-        messageHandlerThread = new Thread(messageHandler);
-        messageHandlerThread.setName("PlayerCallbackProxy-MessageHandler");
-        messageHandlerThread.start();
+//        messageHandlerThread = new Thread(messageHandler);
+//        messageHandlerThread.setName("PlayerCallbackProxy-MessageHandler");
+//        messageHandlerThread.start();
     }
 
     protected String sendAndExpectReply(int dest, String msg) {

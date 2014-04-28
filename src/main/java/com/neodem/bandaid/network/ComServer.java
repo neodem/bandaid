@@ -5,7 +5,11 @@ import com.neodem.bandaid.network.messaging.DefaultComMessageTranslator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -158,7 +162,7 @@ public class ComServer implements Runnable {
 
             // make thread
             ClientConnector clientConnectorThread = new ClientConnector(socket, dest);
-            clientConnectorThread.setName("ClientConnectionThread-" + dest);
+            clientConnectorThread.setName("ClientConnectionThread" + dest);
 
             // add to map
             clientMap.put(dest, clientConnectorThread);

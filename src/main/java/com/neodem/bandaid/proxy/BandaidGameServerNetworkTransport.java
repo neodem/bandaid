@@ -44,7 +44,7 @@ public final class BandaidGameServerNetworkTransport extends ComClient {
     }
 
     @Override
-    public void handleMessage(int from, String msg) {
+    public synchronized void handleMessage(int from, String msg) {
         log.trace("Server : handle message : " + msg);
         ServerMessageType serverMessageType = serverMessageTranslator.unmarshalServerMessageTypeFromMessage(msg);
 
@@ -54,9 +54,9 @@ public final class BandaidGameServerNetworkTransport extends ComClient {
 
         switch (serverMessageType) {
             case hello:
-                if(!players.containsKey(from)) {
+                if (!players.containsKey(from)) {
                     NetworkEntityType networkEntityType = serverMessageTranslator.unmarshalNetworkEntityType(msg);
-                    if(networkEntityType == NetworkEntityType.playerCallbackNetworkTransport) {
+                    if (networkEntityType == NetworkEntityType.playerCallbackNetworkTransport) {
 
                         log.info("A PlayerCallbackNetworkTransport is up at networkId={} and needs a Server Side Proxy.", from);
 
@@ -66,10 +66,10 @@ public final class BandaidGameServerNetworkTransport extends ComClient {
                         log.debug("Constructing a PlayerCallbackProxy");
                         PlayerCallbackProxy pc = playerCallbackProxyFactory.makeNewProxy(from, playerName);
 
-                        log.debug("Associating the PlayerCallbackFactory to networkId {}", from);
+                        log.debug("Associating the PlayerCallbackProxy to networkId {}", from);
                         players.put(from, pc);
 
-                        log.debug("Initializing the PlayerCallbackFactory");
+                        log.debug("Initializing the PlayerCallbackProxy");
                         pc.init();
                     }
                 }
@@ -77,6 +77,7 @@ public final class BandaidGameServerNetworkTransport extends ComClient {
             case connect:
                 try {
                     bandaidGameServer.connect(players.get(from));
+                    replyMessage = serverMessageTranslator.marshalServerConnectOkReply();
                 } catch (PlayerError playerError) {
                     replyMessage = serverMessageTranslator.marshalPlayerError(playerError);
                 }
@@ -103,7 +104,8 @@ public final class BandaidGameServerNetworkTransport extends ComClient {
                 String serverStatus = bandaidGameServer.getServerStatus();
                 replyMessage = serverMessageTranslator.marshalGetServerStatusReply(serverStatus);
                 break;
-        };
+        }
+        ;
 
         if (replyMessage != null) {
             send(from, replyMessage);

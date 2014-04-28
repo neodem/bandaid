@@ -89,7 +89,6 @@ public class BandaidServerTest {
 
 
         clientProxy.registerForGame(playerCallback, firstGameId);
-
     }
 
 }

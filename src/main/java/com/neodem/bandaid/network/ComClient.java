@@ -69,7 +69,6 @@ public abstract class ComClient {
         log.info("{} is Establishing connection with ComServer. Please wait ...", getClientName());
         try {
             socket = new Socket(hostName, port);
-            log.info("{} is Connected to ComServer : {}", getClientName(), socket);
             streamOut = new DataOutputStream(socket.getOutputStream());
             startClientThread();
         } catch (UnknownHostException uhe) {
@@ -77,15 +76,17 @@ public abstract class ComClient {
         } catch (IOException ioe) {
             log.error("Unexpected exception: " + ioe.getMessage());
         }
+        log.info("{} is Connected to ComServer : {}", getClientName(), socket);
     }
 
     protected void startClientThread() {
         if (clientThread == null) {
             clientThread = new ComClientThread();
-            clientThread.setName("ComClientThread");
+            clientThread.setName("ComClientThread-" + getClientName());
             clientThread.openCommunications();
             clientThread.start();
         }
+        log.trace("ClientThread started.");
     }
 
     /**
@@ -112,7 +113,7 @@ public abstract class ComClient {
     /**
      * send a message to all other users asynchronously
      *
-     * @param message     the message to send
+     * @param message the message to send
      */
     public void broadcast(String message) {
         String m = mt.makeBroadcastMessage(message);
