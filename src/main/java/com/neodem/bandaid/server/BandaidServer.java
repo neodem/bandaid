@@ -4,7 +4,7 @@ import com.neodem.bandaid.network.ComServer;
 import com.neodem.bandaid.proxy.BandaidGameServerNetworkTransport;
 
 /**
- * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
+ * Author: Vincent Fumo (vfumo) : neodem@gmail.com
  * Created Date: 4/25/14
  */
 public class BandaidServer {

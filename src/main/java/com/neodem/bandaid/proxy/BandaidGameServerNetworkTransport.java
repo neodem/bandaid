@@ -19,7 +19,7 @@ import java.util.Map;
  * This is the network enabled proxy. It sits server side and communicates with clients
  * over the network and proxies the BandaidGameServer. There should be only one running at once.
  * <p/>
- * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
+ * Author: Vincent Fumo (vfumo) : neodem@gmail.com
  * Created Date: 3/27/14
  */
 public final class BandaidGameServerNetworkTransport extends ComClient {

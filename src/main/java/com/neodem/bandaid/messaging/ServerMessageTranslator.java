@@ -5,7 +5,7 @@ import com.neodem.bandaid.gamemasterstuff.PlayerError;
 import java.util.Map;
 
 /**
- * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
+ * Author: Vincent Fumo (vfumo) : neodem@gmail.com
  * Created Date: 4/1/14
  */
 public interface ServerMessageTranslator {

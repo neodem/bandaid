@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * handles managing connections from players and putting them into games and starting the games
  * <p/>
- * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
+ * Author: Vincent Fumo (vfumo) : neodem@gmail.com
  * Created Date: 4/24/14
  */
 public class BandaidGameServerImpl implements BandaidGameServer {

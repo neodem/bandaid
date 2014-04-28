@@ -20,7 +20,7 @@ import org.junit.Test;
 import java.util.Map;
 
 /**
- * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
+ * Author: Vincent Fumo (vfumo) : neodem@gmail.com
  * Created Date: 4/24/14
  */
 public class BandaidServerTest {

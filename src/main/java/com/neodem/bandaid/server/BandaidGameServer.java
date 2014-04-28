@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * to communicate with the Bandaid Game Server
  * <p/>
- * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
+ * Author: Vincent Fumo (vfumo) : neodem@gmail.com
  * Created Date: 4/9/14
  */
 public interface BandaidGameServer {
@@ -31,7 +31,7 @@ public interface BandaidGameServer {
      * register for a game
      *
      * @param player
-     * @param gameId     the game you want to register for
+     * @param gameId the game you want to register for
      * @return if you were registered or not
      */
     boolean registerForGame(PlayerCallback player, String gameId) throws PlayerError;

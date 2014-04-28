@@ -1,7 +1,7 @@
 package com.neodem.bandaid.gamemasterstuff;
 
 /**
- * Author: Vincent Fumo (vfumo) : vincent_fumo@cable.comcast.com
+ * Author: Vincent Fumo (vfumo) : neodem@gmail.com
  * Created Date: 3/31/14
  */
 public interface PlayerCallback {
