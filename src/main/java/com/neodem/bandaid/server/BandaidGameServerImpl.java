@@ -96,7 +96,7 @@ public class BandaidGameServerImpl implements BandaidGameServer {
             throw new PlayerError(msg);
         }
 
-        if (connectedPlayers.contains(playerName)) {
+        if (connectedPlayers.contains(player)) {
             if (gameMasters.containsKey(gameId)) {
                 GameMaster gm = gameMasters.get(gameId);
 

@@ -23,6 +23,25 @@ public abstract class PlayerCallbackProxy implements PlayerCallback {
 
     private final MessageHandler messageHandler = new MessageHandler("localhost", 6969);
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PlayerCallbackProxy)) return false;
+
+        PlayerCallbackProxy that = (PlayerCallbackProxy) o;
+
+        if (clientNetworkId != that.clientNetworkId) return false;
+        if (!playerName.equals(that.playerName)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = playerName.hashCode();
+        result = 31 * result + clientNetworkId;
+        return result;
+    }
 
     public PlayerCallbackProxy(int clientNetworkId, String playerName, ServerMessageTranslator serverMessageTranslator) {
         this.serverMessageTranslator = serverMessageTranslator;

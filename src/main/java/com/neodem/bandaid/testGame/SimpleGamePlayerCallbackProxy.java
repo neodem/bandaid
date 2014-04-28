@@ -11,9 +11,4 @@ public class SimpleGamePlayerCallbackProxy extends PlayerCallbackProxy implement
     public SimpleGamePlayerCallbackProxy(int clientNetworkId, String playerName, ServerMessageTranslator serverMessageTranslator) {
         super(clientNetworkId, playerName, serverMessageTranslator);
     }
-
-    @Override
-    public String getPlayerName() {
-        return null;
-    }
 }
