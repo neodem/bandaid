@@ -73,12 +73,6 @@ public abstract class PlayerCallbackProxy implements PlayerCallback {
         }
     }
 
-    public void init() {
-//        messageHandlerThread = new Thread(messageHandler);
-//        messageHandlerThread.setName("PlayerCallbackProxy-MessageHandler");
-//        messageHandlerThread.start();
-    }
-
     protected String sendAndExpectReply(int dest, String msg) {
         messageHandler.send(dest, msg);
 

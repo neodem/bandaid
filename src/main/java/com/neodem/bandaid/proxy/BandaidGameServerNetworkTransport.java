@@ -68,9 +68,6 @@ public final class BandaidGameServerNetworkTransport extends ComClient {
 
                         log.debug("Associating the PlayerCallbackProxy to networkId {}", from);
                         players.put(from, pc);
-
-                        log.debug("Initializing the PlayerCallbackProxy");
-                        pc.init();
                     }
                 }
                 break;

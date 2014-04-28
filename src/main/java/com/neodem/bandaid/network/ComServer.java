@@ -18,7 +18,6 @@ import java.util.Map;
 public class ComServer implements Runnable {
 
     // special destinations
-    public static final int Broadcast = -1;
     public static final int Server = -2;
     public static final int Unknown = -3;
     private static final Logger log = LogManager.getLogger(ComServer.class.getName());

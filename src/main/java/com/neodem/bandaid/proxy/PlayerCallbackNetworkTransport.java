@@ -38,7 +38,7 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
         messageHandlerThread.setName("PlayerCallbackNetworkTransport-MessageHandler");
         messageHandlerThread.start();
 
-        messageHandler.send(-2, serverMessageTranslator.marshalHello(NetworkEntityType.playerCallbackNetworkTransport, player.getPlayerName()));
+        messageHandler.send(ComServer.Server, serverMessageTranslator.marshalHello(NetworkEntityType.playerCallbackNetworkTransport, player.getPlayerName()));
     }
 
     private class MessageHandler extends ComClient implements Runnable {
@@ -103,12 +103,6 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
     protected abstract void handleGameMessage(int from, String gameMessage);
 
     protected abstract String handleGameMessageWithReply(int from, String gameMessage);
-
-    public void init() {
-//        messageHandlerThread = new Thread(messageHandler);
-//        messageHandlerThread.setName("PlayerCallbackNetworkTransport-MessageHandler");
-//        messageHandlerThread.start();
-    }
 
     protected String sendAndExpectReply(int dest, String msg) {
         messageHandler.send(dest, msg);

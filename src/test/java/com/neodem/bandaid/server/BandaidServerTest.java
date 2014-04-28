@@ -64,7 +64,6 @@ public class BandaidServerTest {
         };
 
         clientProxy = new SimpleGamePlayerCallbackNetworkTransport(playerCallback, serverMessageTranslator);
-        clientProxy.init();
     }
 
     @After
