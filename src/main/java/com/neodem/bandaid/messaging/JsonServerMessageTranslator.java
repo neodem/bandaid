@@ -24,12 +24,11 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
 
     @Override
     public ServerMessageType unmarshalServerMessageTypeFromMessage(String m) {
-        JSONObject j;
         ServerMessageType result = ServerMessageType.unknown;
 
         if (m != null) {
             try {
-                j = new JSONObject(m);
+                JSONObject j = new JSONObject(m);
                 String type = j.getString(TYPE);
                 result = ServerMessageType.valueOf(type);
             } catch (JSONException e) {
