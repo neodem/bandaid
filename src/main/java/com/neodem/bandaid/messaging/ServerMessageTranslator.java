@@ -58,11 +58,8 @@ public interface ServerMessageTranslator {
 
     boolean isReply(String serverMessage);
 
-    String marshalGetPlayerNameRequest();
-
-    public String marshalGetPlayerNameReply(String playerName);
-
     String unmarshalPlayerName(String msg);
+
     /**
      * make a special message to alert to all connected clients that we are online and ready
      *
@@ -71,6 +68,7 @@ public interface ServerMessageTranslator {
      * @return
      */
     String marshalHello(NetworkEntityType clientType, String identifier);
+
     NetworkEntityType unmarshalNetworkEntityType(String msg);
 
     /// game messages
@@ -82,7 +80,6 @@ public interface ServerMessageTranslator {
     String marshalGameMessageExpectsReply(String gameMessage);
 
     String marshalGameMessageReply(String gameMessage);
-
 
 
 }

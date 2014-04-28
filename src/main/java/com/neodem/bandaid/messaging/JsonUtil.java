@@ -29,6 +29,21 @@ public class JsonUtil {
         }
     }
 
+    public static boolean getBooleanFromJsonMessage(String m) {
+        boolean result = false;
+
+        if (m != null) {
+            try {
+                JSONObject j = new JSONObject(m);
+                result = j.getBoolean(BOOL);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
     public static JSONArray marshalStringStringMapIntoJsonArray(Map<String, String> map) {
         JSONArray a = new JSONArray();
 
@@ -109,21 +124,6 @@ public class JsonUtil {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static boolean getBooleanFromJsonMessage(String m) {
-        boolean result = false;
-
-        if (m != null) {
-            try {
-                JSONObject j = new JSONObject(m);
-                result = j.getBoolean(BOOL);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
     }
 
     public static String getStringFromJsonMessage(String key, String message) {

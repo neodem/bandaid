@@ -136,6 +136,7 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
     public boolean registerForGame(PlayerCallback player, String gameId) throws PlayerError {
         String m = serverMessageTranslator.marshalRegisterForGameRequest(gameId);
         String reply = sendAndExpectReply(ComServer.Server, m);
+        serverMessageTranslator.checkReplyForPlayerError(reply);
         return serverMessageTranslator.unmarshalRegisterForGameReply(reply);
     }
 

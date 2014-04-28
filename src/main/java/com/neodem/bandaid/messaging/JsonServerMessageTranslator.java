@@ -166,22 +166,6 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
     }
 
     @Override
-    public String marshalGetPlayerNameRequest() {
-        JSONObject j = new JSONObject();
-        setMessageTypeIntoJSONObject(ServerMessageType.getPlayerName, j);
-        return j.toString();
-    }
-
-    @Override
-    public String marshalGetPlayerNameReply(String playerName) {
-        JSONObject j = new JSONObject();
-        setReplyFlag(j);
-        setMessageTypeIntoJSONObject(ServerMessageType.getPlayerName, j);
-        JsonUtil.setStringIntoJsonObject(PLAYERNAME, playerName, j);
-        return j.toString();
-    }
-
-    @Override
     public String unmarshalPlayerName(String msg) {
         return JsonUtil.getStringFromJsonMessage(PLAYERNAME, msg);
     }
@@ -280,17 +264,15 @@ public class JsonServerMessageTranslator implements ServerMessageTranslator {
         JSONObject j = new JSONObject();
         setReplyFlag(j);
         setMessageTypeIntoJSONObject(ServerMessageType.error, j);
-        JsonUtil.setKeyValueStringsIntoJSONObject(PLAYERERROR, playerError.getMessage(), j);
+        JsonUtil.setStringIntoJsonObject(PLAYERERROR, playerError.getMessage(), j);
         return j.toString();
     }
 
     @Override
     public void checkReplyForPlayerError(String reply) throws PlayerError {
-        JSONObject j;
-
         if (reply != null) {
             try {
-                j = new JSONObject(reply);
+                JSONObject j = new JSONObject(reply);
                 String playerErrorMessage = j.getString(PLAYERERROR);
                 if (playerErrorMessage != null) {
                     throw new PlayerError(playerErrorMessage);
