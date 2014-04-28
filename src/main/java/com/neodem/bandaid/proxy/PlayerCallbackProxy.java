@@ -119,7 +119,8 @@ public abstract class PlayerCallbackProxy implements PlayerCallback {
 
     protected String sendGameMessageExpectReply(int to, String m) {
         String msg = serverMessageTranslator.marshalGameMessageExpectsReply(m);
-        return sendAndExpectReply(to, msg);
+        String reply = sendAndExpectReply(to, msg);
+        return serverMessageTranslator.unmarshalGameMessage(reply);
     }
 
     protected void sendGameMessage(int to, String m) {

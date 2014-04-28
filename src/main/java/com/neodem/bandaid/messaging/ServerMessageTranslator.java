@@ -75,7 +75,13 @@ public interface ServerMessageTranslator {
 
     String marshalGameMessage(String gameMessage);
 
-    String unmarshalGameMessage(String gameMessage);
+    /**
+     * will unmarshal a game message from a server message
+     *
+     * @param serverMessage
+     * @return
+     */
+    String unmarshalGameMessage(String serverMessage);
 
     String marshalGameMessageExpectsReply(String gameMessage);
 
