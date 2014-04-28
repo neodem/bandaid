@@ -55,7 +55,7 @@ public abstract class PlayerCallbackProxy implements PlayerCallback {
         messageHandlerThread.start();
 
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -118,7 +118,7 @@ public abstract class PlayerCallbackProxy implements PlayerCallback {
     }
 
     protected String sendGameMessageExpectReply(int to, String m) {
-        String msg = serverMessageTranslator.marshalGameMessage(m);
+        String msg = serverMessageTranslator.marshalGameMessageExpectsReply(m);
         return sendAndExpectReply(to, msg);
     }
 

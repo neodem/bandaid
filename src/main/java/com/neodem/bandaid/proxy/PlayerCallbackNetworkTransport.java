@@ -39,7 +39,7 @@ public abstract class PlayerCallbackNetworkTransport implements BandaidGameServe
         messageHandlerThread.start();
 
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
